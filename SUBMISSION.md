@@ -6,64 +6,81 @@
 
 | Gate | Status | Evidence |
 | --- | --- | --- |
-| Contract / runtime | Partial | 11 Direct Mode tests and GenVM lint/schema pass; clean-clone gate pending. |
-| Real consensus | Partial / not green | Exact-text baseline, revalidation, replay, challenge, negative case, and propagation reached accepted consensus on a disposable deployment. The separate semantic-mode baseline reached `UNDETERMINED` / `NO_MAJORITY`; semantic consensus remains unresolved. |
-| Real evidence | Partial | A real browser render of official GenLayer docs established a `RELIABLE` baseline and full revalidation using the page’s published heading. Semantic LLM evaluation remains unproven live. |
-| Steward fit | Partial | Rejection audit and DM1–DM15 mapping are documented. The live dependency propagation lifecycle is proven on a disposable deployment; final-source parity and push remain outstanding. |
+| Contract / runtime | Partial | 11 Direct Mode tests, GenVM lint/schema, and a clean clone of contract-source commit `176136e` pass. Latest integration harness/docs additions are being committed separately. |
+| Real consensus | Partial / not green | Canonical exact-text baseline, full revalidation, replay, challenge, failure handling, and dependency propagation reached accepted majority consensus. A focused semantic-mode baseline also reached accepted majority consensus; its full revalidation was interrupted by an RPC disconnect before a receipt was obtained. |
+| Real evidence | Partial | Canonical browser-rendered official documentation established a reliable exact-text baseline and revalidation. Semantic interpretation has a live reliable baseline; semantic revalidation and material drift under LLM judgment remain unproven. |
+| Steward fit | Partial | Rejection audit and DM1–DM15 map are documented. Canonical dependency propagation completed. Semantic-mode revalidation and final clean clone of the evidence-documentation commit remain outstanding. |
 
-## Submission copy (not final until blockers clear)
+## Submission copy (not final until all gates clear)
 
 - **Category:** Standalone reusable GenLayer Intelligent Contract.
 - **Title:** Decision Memory Protocol — immutable decision context, semantic revalidation, counterfactual replay, and dependency-aware reliance.
 - **One-line thesis:** Preserves why a decision was defensible, revalidates its assumptions against evidence, and deterministically propagates reliance changes without rewriting history.
 - **Repository:** https://github.com/Chinny070/Decision-memory-protocol-
-- **Canonical Studionet address / Explorer / deployment transaction:** final-source values pending; an earlier candidate deployment is recorded below.
-- **Why GenLayer:** Independent validators must retrieve and interpret current external evidence; one creator, API, or model must not author the reliance result alone.
-- **Consensus mechanism:** Custom leader/validator nondeterministic evaluation with typed substantive equivalence; deterministic code derives status and graph effects. Semantic-mode live agreement remains unresolved.
-- **Deterministic responsibilities:** Input and graph validation, status/materiality thresholds, lease transitions, immutable receipts, lineage, and bounded propagation.
-- **Failure policy:** Insufficient evidence, retrieval failure, or consensus disagreement never becomes affirmative reliance; transaction disagreement does not create an application result.
-- **Reuse surface:** `get_reliance_certificate`, `get_reliance_status`, `is_reliable`, and bounded lifecycle writes for any decision domain.
-- **Verified tests:** 11 Direct Mode tests; one complete disposable Studionet lifecycle passed; three GenVM lint checks and 22-method schema passed.
-- **Live limitation:** The live lifecycle used deterministic exact-text evaluation. A semantic LLM baseline did not reach majority agreement.
+- **Canonical Studionet address:** [0xC25E6be425d940BB4b794932b1226D4bccD21824](https://explorer-studio.genlayer.com/address/0xC25E6be425d940BB4b794932b1226D4bccD21824)
+- **Deployment transaction:** `0xd9d1d7ccd004bea5d202c5615021b28923df5557f4a3102b3cc49f001fa12eac`, `ACCEPTED`, `MAJORITY_AGREE`.
+- **Deployment source commit:** contract source from `176136ee1bb507aee8aa86673741ee9d8792500d`.
+- **Why GenLayer:** Validators independently retrieve and interpret external evidence; one creator, API, or model must not author reliance alone.
+- **Consensus mechanism:** Custom leader/validator nondeterministic evaluation with typed substantive equivalence; deterministic code derives reliance and graph effects.
+- **Failure policy:** Insufficient evidence, source failure, or consensus disagreement never creates affirmative reliance; transaction-level disagreement is not an application status.
+- **Reuse surface:** `get_reliance_certificate`, `get_reliance_status`, `is_reliable`, plus bounded lifecycle writes.
+- **Verified local checks:** 11 Direct Mode tests; 3 GenVM lint checks; 22-method schema; clean clone of the deployed contract-source commit.
+- **Verified live checks:** One complete disposable Studionet lifecycle and the canonical lifecycle transactions listed below. The semantic-mode baseline passed; semantic revalidation was interrupted by an RPC disconnect.
 - **Reviewer fast path:** `README.md`, `DECISION.md`, `docs/ARCHITECTURE.md`, `docs/INVARIANTS.md`, `docs/CONSENSUS.md`, and `docs/RELEASE_CANDIDATE_VERIFICATION.md`.
-- **Portal description:** Decision Memory Protocol is a reusable GenLayer Intelligent Contract that preserves decision context and critical assumptions, revalidates them against independently retrieved evidence, and gives downstream contracts a machine-readable reliance certificate. Validators independently assess external evidence; deterministic contract logic derives reliance state, lease freshness, successor lineage, and bounded dependency impact. It includes immutable counterfactual replay and fail-closed evidence handling. The Direct Mode and exact-text Studionet lifecycle pass; semantic-mode live validator agreement and final-source parity remain open.
+- **Portal description:** Decision Memory Protocol is a reusable GenLayer Intelligent Contract that preserves decision context and critical assumptions, revalidates them against independently retrieved evidence, and gives downstream contracts a machine-readable reliance certificate. Validators independently assess external evidence; deterministic contract logic derives reliance state, lease freshness, successor lineage, and bounded dependency impact. It includes immutable counterfactual replay and fail-closed evidence handling. Direct Mode, GenVM validation, and a canonical exact-text lifecycle pass. Semantic-mode live baseline passes; full semantic revalidation and final clean-clone verification remain open.
 
-## Verified evidence
+## Canonical deployment and source parity
 
-- Final source commit: pending.
-- Earlier candidate deployment: `0xE7146a6556be0F9e5C5729F3660eAD91b50A573C`.
-- Deployment transaction: `0x62ca2d689418e2b00a2216e8f41cc5b26c4e2585e428aa3584d5d1d9f47b6968`, `ACCEPTED`, `MAJORITY_AGREE` (five validator agreements).
-- Explorer address page: [GenLayer Explorer](https://explorer-studio.genlayer.com/address/0xE7146a6556be0F9e5C5729F3660eAD91b50A573C).
-- Deployed schema: 22 public methods (14 views, 8 writes). Final-source parity is pending redeployment and exact comparison.
-- Latest disposable integration deployment: `0x29ee1C31AA1e99f59d05BAec46A9b34d1D2ba241`.
-- Register main decision: `0xc530b990c3c85b92d851579da64bfa43cbc3935b60a9b92e37e06de395b76b8b`, `ACCEPTED`.
-- Browser-render baseline: `0xb7bb7848a35ad2abcc4f1c966303db5e5a4aefe1dd2247ac00de614a6c8e6ab7`, `ACCEPTED`, `RELIABLE`.
-- Full web revalidation: `0x3f3bc3eeed33b58078060518d9f6b8368d9c8def9b82180fbee2014f5e1a64cc`, `ACCEPTED`, `RELIABLE`.
-- Counterfactual replay: `0x38b15590fd18f0379896efa64ed845af9c552eafba92a869956a36864bdfe510`, `ACCEPTED`, `WOULD_REQUIRE_REVIEW`.
-- Evidence-backed challenge: `0x045e5c0060d8eee43babfd0a1b71444ccaf5cbed846e1b987596da04687adee1`, `ACCEPTED`, `OVERTURNED`.
-- Negative source case registration: `0xb2eded443eee69ecc47c894a1cb019a30525814dd32ffd9b64f7b452a0e7ab2d`, `ACCEPTED`; unavailable-source baseline `0xaa9a048b260c982fd70556a2554e7be752dfedf0d871ee5fcbf84148f3c142d5`, `ACCEPTED`, `NEEDS_REVIEW` (not invalidated).
-- Dependent capsule registration: `0x4d5f0b74b2f3520b0d8c62237632903eb4c345415390617c510cf28e6ddff9ee`, `ACCEPTED`; dependent baseline `0x58a837e916a0dcb5a56ab7a6fbc8c054d137f2f5e6814cbe54659475ddfb9071`, `ACCEPTED`; propagation `0x58a72c7dbca4a98e2f73b24a04f3fec50108914e848d175dde343798d14ff8a1`, `ACCEPTED`, event `impact_3` complete.
-- Earlier semantic baseline: `0xa232d7409a4d46aaaf493e606c311f82e2c2750614c53040bf4abfa429cc48e0`, `UNDETERMINED`, `NO_MAJORITY`; validators materially disagreed.
-- Hosted integration: 1 passed with strict `ACCEPTED` and `MAJORITY_AGREE` assertions. Direct Mode: 11 passed. GenVM lint: 3 checks passed. GenVM schema: 22 methods.
-- Clean clone: pending. GitHub push: pending; configured GitHub token was reported invalid.
+- Network: GenLayer Studionet, chain ID `61999`, RPC `https://studio.genlayer.com/api`.
+- CLI: `genlayer` 0.39.1; deployer public address `0xaffe15eec45b68835cc9e5b4ab85dd5deae8e70b`.
+- Contract: `0xC25E6be425d940BB4b794932b1226D4bccD21824`.
+- Deployment transaction: `0xd9d1d7ccd004bea5d202c5615021b28923df5557f4a3102b3cc49f001fa12eac`, `ACCEPTED` / `MAJORITY_AGREE`.
+- Explorer address: https://explorer-studio.genlayer.com/address/0xC25E6be425d940BB4b794932b1226D4bccD21824 (HTTP 200; address found in page).
+- Explorer transaction: https://explorer-studio.genlayer.com/tx/0xd9d1d7ccd004bea5d202c5615021b28923df5557f4a3102b3cc49f001fa12eac (HTTP 200; transaction hash found in page).
+- Deployed schema: 22 methods (14 views, 8 writes).
+- Contract blob at source commit: `73007b3208992af1cb333bc6605861d99b8fa67b` (Git blob SHA-1).
+- Deployed source normalized-text SHA-256: `53e9107e8a7013eb5a81201d4e8b73cd2bb83284188ba60367ab3f71b9ce1b34`.
+- Source parity: verified. The source returned by `genlayer code` exactly matched the decoded Git blob after removing only CLI display framing newlines; normalized content hashes matched.
+
+## Canonical Studionet lifecycle evidence
+
+The successful canonical lifecycle used decision prefix `live-docs-10892` on the final-source contract. Each accepted transaction below reached `MAJORITY_AGREE` unless noted.
+
+| Scenario | Transaction | Status / typed result |
+| --- | --- | --- |
+| Register primary decision | `0x84c917569ff16d3042ece4db5a3679c448e28665447fd46e58079c1960ec583f` | `FINALIZED` / `MAJORITY_AGREE` |
+| Browser-rendered baseline | `0x2c45ec1422b82df4090843e70a13785d30783e6be88c052b9486893ddccb504f` | `ACCEPTED`, `RELIABLE` |
+| Full web revalidation | `0x7a19e6da388aadb8a2437c6345e9e8740c92fbefbf57cdbc87413ee6361d7474` | `ACCEPTED`, `RELIABLE` |
+| Counterfactual replay | `0xc4c6dca15c505df4f916574b8eed60f708e8613780174c2cf2371b0f5af581dd` | `ACCEPTED`, `WOULD_REQUIRE_REVIEW` |
+| Evidence-backed challenge | `0x1c5b4b02de5af5af6545d538da85997ca1007f782d9595daf1d33e7df05220e2` | `ACCEPTED`, `OVERTURNED` |
+| Register unavailable-source decision | `0x6bca1dcd343babf49da3fd040060b6ac59d3343087b459d260be03c34a398557` | `FINALIZED` / `MAJORITY_AGREE` |
+| Fail-closed unavailable-source baseline | `0x5a199cbe09ef2f4e867a7ec0fc7ab106d42d99ad463256924568f6066f1e57f7` | `ACCEPTED`, `NEEDS_REVIEW` (not invalidated) |
+| Register hard-dependent decision | `0xc89b9f74664049a0a967bd6757198f757890e4daac0ca2fa50ca4b0edc4239fc` | `FINALIZED` / `MAJORITY_AGREE` |
+| Dependent baseline | `0xf20237d48ecab71bb438993be2c6c27dde0d35930f16a483414a602475887465` | `ACCEPTED` / `MAJORITY_AGREE`; dependent status `NEEDS_REVIEW` |
+| Bounded dependency propagation | `0xa6bc9ffb153cf8e82fa449c0a0a9d72b7b7dff68919f4300631ddfad56a94376` | `FINALIZED` / `MAJORITY_AGREE`; event `impact_4` complete |
+
+The initial canonical test process lost RPC connectivity while polling the dependent registration after Studionet had accepted it. The receipt was reconciled directly; a separate canonical resume test verified the dependent status and complete impact event. An earlier challenge transaction `0x97a00d95b19bc35c693e0047ee8befb541fb41fc270745ae829d0d0a875237f4` was `CANCELED` before validator rounds and is not counted as success.
+
+## Semantic-mode live proof
+
+- Focused official-docs semantic baseline: `0x55c0b372aeb0be1444e447dcc614239873c81a5d2ac80dcc8e9a7b68ab5dca10`, `FINALIZED` / `MAJORITY_AGREE`, `RELIABLE`.
+- Semantic full revalidation was attempted immediately after the baseline, but the RPC disconnected while the SDK polled `eth_getTransactionByHash`. No definitive receipt was obtained, so no revalidation result is claimed.
+- An earlier, broader semantic assumption reached `UNDETERMINED` / `NO_MAJORITY` at `0xa232d7409a4d46aaaf493e606c311f82e2c2750614c53040bf4abfa429cc48e0`.
 
 ## Steward rejection audit
 
-- Database-only: **No.** The protocol computes reliance from accepted consensus findings.
-- Monitoring-only: **No.** It freezes decision context and adds replay, dependency impact, lineage, and a machine-readable certificate.
-- Provenance clone: **No.** Evidence identity supports the reliance decision.
+- Database-only: **No.** Reliance is derived from accepted consensus findings.
+- Monitoring-only: **No.** The protocol freezes decision context and adds replay, dependency impact, lineage, and a composable certificate.
+- Provenance clone: **No.** Evidence identity supports the reliance result.
 - Historical truth oracle: **No.** Replay evaluates a committed baseline under a new policy; it does not reconstruct arbitrary past truth.
-- Model controls final state: **No.** Contract code controls status, lease, IDs, lineage, graph changes, and propagation.
-- Shape-only validator: **No.** The validator independently retrieves evidence and evaluates reliance-critical fields.
-- Fake/text-only web proof: **Partial.** A real browser render and exact published heading check were accepted on Studionet; semantic LLM evaluation is still unresolved.
-- Decorative graph: **Live bounded proof recorded.** A hard-dependent capsule was covered by accepted propagation; larger graph capacity is covered in Direct Mode.
-- Replay rewrites history: **No in implementation.** Direct Mode confirms replay does not mutate the original definition or certificate.
-- Lease semantics: **Covered in Direct Mode.** Warning and due-time boundaries are tested.
-- Temporary failure invalidates: **No.** Direct Mode and a live unavailable-source baseline both produced review, not invalidation.
+- Model controls final state: **No.** Deterministic code controls status, lease, IDs, lineage, graph changes, and propagation.
+- Shape-only validator: **No.** Validators independently retrieve evidence and evaluate reliance-critical fields.
+- Fake/text-only web proof: **No for exact-text path.** Real browser rendering and the published heading were used in accepted canonical baseline/revalidation writes.
+- Decorative graph: **No.** Canonical hard dependency, `NEEDS_REVIEW`, and completed bounded propagation were verified.
+- Replay rewrites history: **No in implementation.** Direct Mode confirms the original capsule is unchanged after replay.
+- Lease semantics: **Covered in Direct Mode.** Warning and due-time thresholds are tested.
+- Temporary failure invalidates: **No.** Both Direct Mode and canonical unavailable-source baseline resulted in review, not invalidation.
 
-## Remaining blockers
+## Remaining gate
 
-- Semantic-mode baseline did not reach majority agreement. Do not claim live validation of semantic LLM findings.
-- The final source must be committed, pushed, redeployed, and compared byte-for-byte with the deployed code; a clean-clone gate is also outstanding.
-
-Do not submit or freeze while any gate is not green.
+Semantic-mode revalidation against live evidence still needs a definitive accepted receipt. The latest attempt ended at the RPC transport layer, so retry from the canonical address only after Studionet RPC availability is stable. Do not mark all four gates green, call the project finalized, or freeze until that and the final clean clone of the documentation/evidence commit pass.

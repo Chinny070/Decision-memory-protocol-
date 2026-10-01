@@ -47,9 +47,10 @@ def test_live_studionet_reliance_replay_failure_and_dependency_proof():
         encoding="utf-8",
     )
     factory._get_schema_with_fallback = lambda: json.loads(schema_output)["schema"]
-    contract = factory.deploy()
+    canonical_address = os.environ.get("DMP_CANONICAL_ADDRESS", "").strip()
+    contract = factory.build_contract(canonical_address) if canonical_address else factory.deploy()
     address = getattr(contract, "address", None) or getattr(contract, "contract_address", None)
-    print(f"LIVE_DISPOSABLE_CONTRACT address={address}")
+    print(f"LIVE_CONTRACT address={address} canonical={bool(canonical_address)}")
 
     decision_id = "live-docs-" + str(os.getpid())
     _transact(

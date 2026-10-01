@@ -4,7 +4,7 @@
 
 Canonical target: hosted GenLayer Studionet (`https://studio.genlayer.com/api`, chain ID `61999`). The Explorer base is `https://explorer-studio.genlayer.com`.
 
-An earlier candidate was deployed to hosted Studionet at `0xE7146a6556be0F9e5C5729F3660eAD91b50A573C` in transaction `0x62ca2d689418e2b00a2216e8f41cc5b26c4e2585e428aa3584d5d1d9f47b6968`. Its receipt was `ACCEPTED` / `MAJORITY_AGREE` with five validator agreements, and its schema was retrievable (22 methods). Source changed after that deployment, so this is not the canonical final-source address. Redeploy after final commit and compare the exact returned code blob with the committed contract before recording parity.
+The final contract source from commit `176136ee1bb507aee8aa86673741ee9d8792500d` is deployed at `0xC25E6be425d940BB4b794932b1226D4bccD21824` in transaction `0xd9d1d7ccd004bea5d202c5615021b28923df5557f4a3102b3cc49f001fa12eac`. Its receipt was `ACCEPTED` / `MAJORITY_AGREE`; schema retrieval returned 22 methods. The address Explorer page returned HTTP 200 and contained the contract address. The transaction Explorer page returned HTTP 200 and contained the deploy hash.
 
 ## Canonical deployment procedure
 
@@ -18,10 +18,20 @@ An earlier candidate was deployed to hosted Studionet at `0xE7146a6556be0F9e5C57
 
 CLI interfaces change. Verify current options with `genlayer deploy --help`, `genlayer account --help`, and `genlayer network info` before submitting signed transactions. Official CLI deployment uses `genlayer deploy --contract ... --rpc https://studio.genlayer.com/api`.
 
-## Hosted proof attempt
+## Deployed source parity
 
-A successful disposable lifecycle ran at `0x29ee1C31AA1e99f59d05BAec46A9b34d1D2ba241`. The official rendered GenLayer documentation page supplied its published heading for the `EXACT_TEXT` check. Baseline and revalidation both returned `RELIABLE`; replay returned `WOULD_REQUIRE_REVIEW`; the evidence-backed challenge returned `OVERTURNED`; the `.invalid` source path returned `NEEDS_REVIEW`; and bounded hard-dependency propagation completed. Every write was checked for `ACCEPTED` and `MAJORITY_AGREE`. The separate `SEMANTIC` LLM baseline remains unresolved (`UNDETERMINED` / `NO_MAJORITY`); do not represent this deterministic live path as proof of semantic-mode consensus.
+- Git blob SHA-1: `73007b3208992af1cb333bc6605861d99b8fa67b`.
+- Retrieved deployed source SHA-256 after removing CLI display framing newlines: `53e9107e8a7013eb5a81201d4e8b73cd2bb83284188ba60367ab3f71b9ce1b34`.
+- Exact comparison: retrieved source equals the decoded Git blob at the deployment source commit.
+- Address Explorer: https://explorer-studio.genlayer.com/address/0xC25E6be425d940BB4b794932b1226D4bccD21824.
+- Deployment Explorer: https://explorer-studio.genlayer.com/tx/0xd9d1d7ccd004bea5d202c5615021b28923df5557f4a3102b3cc49f001fa12eac.
 
-The earlier canonical deployment is not the final source deployment because code changed after it. Redeploy the final commit, record the new transaction and address, and verify source parity before claiming canonical final evidence.
+## Canonical lifecycle
+
+The canonical exact-text baseline, revalidation, replay, challenge, negative source case, and bounded dependency propagation were accepted. Hashes and typed outcomes are in `SUBMISSION.md`. The canonical dependency baseline and propagation were completed in a separate resume test after a transient RPC disconnect; the final event `impact_4` reached `complete=True` and its transaction receipt was `FINALIZED` / `MAJORITY_AGREE`.
+
+## Disposable hosted proof
+
+A focused semantic-mode baseline using a direct official-docs claim also reached `RELIABLE` with accepted majority consensus. Its full semantic revalidation attempt ended in an RPC transport disconnect; no result is claimed. An earlier broader semantic assumption did produce `UNDETERMINED` / `NO_MAJORITY`, so semantic-mode agreement needs further live revalidation proof.
 
 The evidence ledger in `SUBMISSION.md` records actual outcomes. Never interpret `UNDETERMINED` as application status or success.
