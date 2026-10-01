@@ -18,7 +18,12 @@ Callers can submit arbitrary definitions and can challenge observations. Source 
 | Oversized payload, source, graph, or history | Strict per-field and global bounds; writes fail closed at capacity. |
 | Prompt injection in web text or caller challenge ground | Inputs are framed as untrusted data; model output is typed and validated. |
 | Forged leader finding | Independent validator refetches and reevaluates; reliance-critical disagreement rejects consensus. |
+| Forged evidence receipt | Validators compare independently recomputed render/content hashes and receipt metadata against the leader. |
 | Duplicate assumption, dependency, challenge, or successor | Duplicate checks and one-successor / bounded-count rules. |
+| Challenge ground substitutes exact-text assertion | EXACT_TEXT challenge evaluation always uses its single frozen registered marker; ambiguous multi-source markers are rejected at registration. |
+| Successor slot hijack | Lowest-level `register_decision` check requires sender to equal predecessor creator before predecessor mutation. |
+| Duplicate challenge burns quota | Canonical identity over immutable challenge inputs is checked before consensus and count increment; identity storage is bounded by the existing global challenge cap. |
+| Replay typed-result equivocation | Validators must agree on the exact enum persisted and exposed; only explanatory digest text is excluded. |
 | Stale evidence or partial refresh | Per-assumption receipts and `PARTIAL` scope; partial work does not renew the full lease. |
 | Temporary network failure | Becomes `UNAVAILABLE` / `EXTERNAL_FAILURE` and review, not contradiction or invalidation. |
 | Replay used to rewrite history | Replay is a separate bounded receipt; original decision hashes and status are unchanged. |
@@ -43,6 +48,8 @@ Reentrancy and message ordering are not applicable to this v1 interface: it has 
 - Fanout, queue size, propagation work, and total capsule count are capped.
 - Canonical JSON fingerprints use SHA-256 with `h_` prefix.
 - Creator-supplied status, model-supplied reliance, model arithmetic, and model-supplied graph actions are not accepted.
+- Only the predecessor creator may create its one successor; `register_decision` enforces this even when called directly.
+- Exact duplicate challenge attempts do not consume challenge capacity; materially different ground, URL, reason, or assumption can be a separate challenge.
 - A hard dependency on an invalidated/blocked upstream becomes `BLOCKED`; uncertain upstream evidence leads to `NEEDS_REVIEW`.
 - External failure does not automatically invalidate a decision.
 

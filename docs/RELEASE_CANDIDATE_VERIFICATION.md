@@ -2,14 +2,24 @@
 
 ## Contract source commit
 
-- Commit: `176136ee1bb507aee8aa86673741ee9d8792500d`.
-- Direct Mode: 11 passed.
+- Previous deployed-source commit: `176136ee1bb507aee8aa86673741ee9d8792500d`.
+- Security-fix source commit: `2ae77cfca02bb81f770aa4e1838a846260decafa`.
+- Current security-fix source commit `2ae77cfca02bb81f770aa4e1838a846260decafa`: 17 Direct Mode tests passed (includes adversarial security regressions).
 - Pickling/serialization: enabled in Direct Mode tests.
 - GenVM linter 0.11.0: 3 checks passed.
 - GenVM schema: 22 methods (14 read, 8 write).
-- Clean clone of this source commit: Direct Mode, lint, and schema passed.
+- Clean clone applies only to the previous pre-fix source; current security-fix source clean-clone validation has not been run.
 
-## Canonical deployment
+## Current deployment (security-fix source)
+
+- Studionet contract: `0x81F5dE555814a8C48Da2FeC654Df40a616b64e71`.
+- Deploy transaction: `0x6059226441770fc986ab0b553520a914b61c5912899aacaa1f8e7812a6615179`, `FINALIZED` / `MAJORITY_AGREE`.
+- Schema: 22 methods (14 views, 8 writes).
+- Retrieved source exact match: blob `d7993a030b372d0e7debb51c7d01842b77d10171`; normalized SHA-256 `57ff36d5de87f6de92a9c7580a6fd37017b92f2a6fed1c39066864b26c323254`.
+- Explorer address and transaction pages: HTTP 200; address/hash present.
+- Current-source live lifecycle proofs remain unrun.
+
+## Previous deployment (pre-fix source)
 
 - Studionet contract: `0xC25E6be425d940BB4b794932b1226D4bccD21824`.
 - Deploy transaction: `0xd9d1d7ccd004bea5d202c5615021b28923df5557f4a3102b3cc49f001fa12eac`, `ACCEPTED` / `MAJORITY_AGREE`.
@@ -30,4 +40,4 @@
 
 ## Remaining release gate
 
-The source, deployment, exact-text live lifecycle, and clean clone are verified. Semantic-mode revalidation against live evidence still needs a definitive accepted receipt. A documentation/tests-only commit is being prepared after these checks; rerun the clean-clone gate from that final repository commit before claiming all gates green. `SUBMISSION.md` holds the complete transaction ledger and accurately limits claims.
+The deployment, exact-text live lifecycle, and clean clone refer to the previous contract source only. Current source includes security fixes for frozen EXACT_TEXT challenge criteria, successor authorization, evidence-hash binding, exact replay consensus, and duplicate challenge rejection. Local tests/lint/schema pass for current source. Semantic-mode revalidation against live evidence still needs a definitive accepted receipt, and current-source deployment parity is established at the new address; current-source lifecycle proofs remain outstanding. The old lifecycle evidence applies only to the previous address. `SUBMISSION.md` holds the complete transaction ledger and accurately limits claims.

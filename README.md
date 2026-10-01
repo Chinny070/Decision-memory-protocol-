@@ -36,6 +36,8 @@ The certificate carries definition and policy hashes, assumption and dependency 
 
 External failure is not semantic contradiction. Insufficient or unavailable evidence cannot establish `RELIABLE`. A critical contradiction or critical materiality finding deterministically invalidates the capsule. Downstream effects are computed by contract code, not by the model.
 
+EXACT_TEXT criteria are frozen at registration. Challenges can add a source but cannot replace the original `match_text`; ambiguous markers across sources are rejected. Only the predecessor creator may create its single successor. Duplicate challenges are rejected before consensus without consuming quota. Validators bind evidence reports to independently recomputed render/content hashes, and replay validators agree on the exact typed result stored by the contract.
+
 ## Bounds
 
 | Resource | Limit |
@@ -78,4 +80,4 @@ All three use the same certificate and safety gate; no domain-specific contract 
 
 ## Current verification state
 
-The repository began empty. Contract-source commit `176136e` has 11 passing Direct Mode tests, passing GenVM lint/schema checks, and reproduces from a clean clone. The final-source contract is deployed on Studionet at `0xC25E6be425d940BB4b794932b1226D4bccD21824`; exact code-source parity was verified. Its canonical exact-text lifecycle passed through dependency propagation. A focused semantic baseline also reached accepted majority consensus, but its attempted revalidation ended at an RPC disconnect before a definitive receipt. The project is not yet submission-green. See [SUBMISSION.md](SUBMISSION.md) for evidence and limits.
+Current source has 17 passing Direct Mode tests, passing GenVM lint, and a generated 22-method schema. The security-corrected source is deployed on Studionet at `0x81F5dE555814a8C48Da2FeC654Df40a616b64e71`; receipt and exact source parity are verified. Existing live lifecycle proofs still describe the previous address, so current-source lifecycle proofs remain outstanding. Semantic live revalidation also remains unresolved. See [SUBMISSION.md](SUBMISSION.md) and [docs/VERIFICATION.md](docs/VERIFICATION.md) for evidence and limits.
