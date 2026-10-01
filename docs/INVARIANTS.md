@@ -5,7 +5,7 @@ This matrix maps the required Decision Memory invariants to the implementation a
 | ID | Invariant | Enforcement | Verification |
 | --- | --- | --- | --- |
 | DM1 | Historical decision definition and baseline are immutable. | `register_decision`, one-shot `establish_baseline`; replay stores a separate receipt. | `test_replay_does_not_mutate_decision_or_certificate`; canonical replay transaction accepted; see `SUBMISSION.md`. |
-| DM2 | Validators independently retrieve evidence. | `_consensus_findings` leader and validator closures each call the configured official `gl.nondet.web` API and compare recomputed receipt hashes. | Forged leader and hash tests; canonical exact-text evidence consensus refers to previous deployment; semantic-mode revalidation remains open. |
+| DM2 | Validators independently retrieve evidence. | `_consensus_findings` leader and validator closures each call the configured official `gl.nondet.web` API and compare recomputed receipt hashes. | Forged leader/hash tests; current-source exact-text and semantic revalidation accepted on Studionet. |
 | DM3 | Model findings cannot set protocol IDs, timestamps, topology, lease, or status. | `_valid_report` restricts model data to typed finding fields; `_derive_and_store` computes state. | Forged-leader, malformed-report, and schema tests. |
 | DM4 | Reliance derives deterministically from accepted findings, lease, and graph state. | `_derive_semantic_status`, `_effective_contract_status`, `_effective_dependency_state`. | Reducer, lease, and dependency Direct Mode tests. |
 | DM5 | Retrieval failure is not semantic contradiction. | Retrieval exceptions and known browser errors become `UNAVAILABLE` / `EXTERNAL_FAILURE`; reducer requires review. | `test_external_failure_is_fail_closed_not_invalidation`; canonical unavailable-source case accepted and reduced to `NEEDS_REVIEW`; see `SUBMISSION.md`. |
@@ -28,8 +28,8 @@ This matrix maps the required Decision Memory invariants to the implementation a
 - Replay validators must agree on the exact persisted `replay_result` enum; the explanation digest may differ.
 - Challenge identities hash decision, assumption, reason, URL, and normalized-ground hash. Exact duplicates are rejected before consensus and do not consume the bounded per-decision quota.
 
-These corrections are present at current deployment `0x81F5dE555814a8C48Da2FeC654Df40a616b64e71` with verified source parity. Existing live lifecycle proofs in `SUBMISSION.md` refer to the previous deployment; current-source lifecycle proofs remain outstanding.
+These corrections are present at current deployment `0x81F5dE555814a8C48Da2FeC654Df40a616b64e71` with verified source parity. The current-source exact-text and semantic lifecycle proofs are in `SUBMISSION.md`; older transaction records are clearly labeled as previous-deployment evidence.
 
 ## Known limitation
 
-An initial broad semantic claim reached `NO_MAJORITY`; a narrower official-docs semantic baseline later reached accepted majority and `RELIABLE`. Its next full revalidation was interrupted by an RPC disconnect before a definitive receipt. Therefore live semantic revalidation/drift remains unverified; the exact-text lifecycle does not substitute for that proof.
+The previous deployment's broad semantic claim reached `NO_MAJORITY`, and its later revalidation attempt was interrupted by an RPC disconnect. On the current security-fix deployment, the focused semantic baseline and full revalidation both reached accepted majority consensus and `RELIABLE`. A live semantic material-drift case remains untested; Direct Mode covers semantic re-fetch disagreement.

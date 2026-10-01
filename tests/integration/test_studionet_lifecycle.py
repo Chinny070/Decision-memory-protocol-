@@ -70,10 +70,10 @@ def test_live_studionet_reliance_replay_failure_and_dependency_proof():
     assert after_revalidation["last_validation_scope"] == "FULL"
     print(f"LIVE_REVALIDATION status={after_revalidation['current_reliance_status']} tx={revalidation_tx.get('hash') or revalidation_tx.get('tx_id')}")
 
-    replay_tx = _transact(contract, "create_counterfactual_replay", decision_id, "Policy v2: require the docs page to explicitly document independent validators.")
-    replay = contract.get_latest_replay(args=[decision_id]).call()
-    assert replay["typed_result"] in ("WOULD_REMAIN_RELIABLE", "WOULD_DEGRADE", "WOULD_REQUIRE_REVIEW", "WOULD_INVALIDATE", "INCONCLUSIVE")
-    print(f"LIVE_REPLAY result={replay['typed_result']} tx={replay_tx.get('hash') or replay_tx.get('tx_id')}")
+    replay_tx = contract.create_counterfactual_replay(args=[decision_id, "Policy v2: require the docs page to explicitly document independent validators."]).transact()
+    replay_accepted = replay_tx.get("status_name") == "ACCEPTED" and replay_tx.get("result_name") == "MAJORITY_AGREE"
+    replay = contract.get_latest_replay(args=[decision_id]).call() if replay_accepted else None
+    print(f"LIVE_REPLAY status={replay_tx.get('status_name')} consensus={replay_tx.get('result_name')} result={replay['typed_result'] if replay else 'NO_ACCEPTED_RESULT'} tx={replay_tx.get('hash') or replay_tx.get('tx_id')}")
     unchanged = contract.get_reliance_certificate(args=[decision_id]).call()
     assert unchanged["decision_definition_hash"] == baseline["decision_definition_hash"]
 
@@ -119,3 +119,4 @@ def test_live_studionet_reliance_replay_failure_and_dependency_proof():
         impact = contract.get_impact_event(args=[impact["impact_event_id"]]).call()
     assert impact["complete"] is True
     print(f"LIVE_PROPAGATION event={impact['impact_event_id']} complete={impact['complete']} tx={propagation.get('hash') or propagation.get('tx_id') if propagation else 'already-complete'}")
+    assert replay_accepted, "counterfactual replay did not reach ACCEPTED / MAJORITY_AGREE"

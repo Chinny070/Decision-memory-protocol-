@@ -17,7 +17,9 @@
 - Schema: 22 methods (14 views, 8 writes).
 - Retrieved source exact match: blob `d7993a030b372d0e7debb51c7d01842b77d10171`; normalized SHA-256 `57ff36d5de87f6de92a9c7580a6fd37017b92f2a6fed1c39066864b26c323254`.
 - Explorer address and transaction pages: HTTP 200; address/hash present.
-- Current-source live lifecycle proofs remain unrun.
+- Current-source exact-text lifecycle: 1 passed (baseline, full revalidation, replay, challenge, unavailable-source fail-closed, dependency propagation).
+- Current-source semantic lifecycle: 1 passed (baseline and full revalidation reliable).
+- One earlier replay attempt returned `UNDETERMINED`; the successful subsequent replay is recorded in `SUBMISSION.md`.
 
 ## Previous deployment (pre-fix source)
 
@@ -40,4 +42,4 @@
 
 ## Remaining release gate
 
-The deployment, exact-text live lifecycle, and clean clone refer to the previous contract source only. Current source includes security fixes for frozen EXACT_TEXT challenge criteria, successor authorization, evidence-hash binding, exact replay consensus, and duplicate challenge rejection. Local tests/lint/schema pass for current source. Semantic-mode revalidation against live evidence still needs a definitive accepted receipt, and current-source deployment parity is established at the new address; current-source lifecycle proofs remain outstanding. The old lifecycle evidence applies only to the previous address. `SUBMISSION.md` holds the complete transaction ledger and accurately limits claims.
+Current security-fix source is deployed with verified parity. Local Direct Mode tests, lint, schema, current-source exact-text lifecycle, and semantic baseline/full revalidation passed. One initial replay attempt was `UNDETERMINED`; a subsequent replay reached accepted majority. Current-source semantic material-drift proof and a clean clone of the final documentation/evidence commit remain outstanding. Previous-deployment evidence is historical only. `SUBMISSION.md` holds the complete transaction ledger and accurately limits claims.

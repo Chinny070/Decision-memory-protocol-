@@ -13,7 +13,7 @@
 - Explorer address: https://explorer-studio.genlayer.com/address/0x81F5dE555814a8C48Da2FeC654Df40a616b64e71 (HTTP 200; address present).
 - Explorer transaction: https://explorer-studio.genlayer.com/tx/0x6059226441770fc986ab0b553520a914b61c5912899aacaa1f8e7812a6615179 (HTTP 200; transaction hash present).
 
-Deployment receipt and source/schema retrieval were verified with GenLayer CLI 0.39.1 against the official Studionet RPC. Current-source live lifecycle proofs have not yet been run. The detailed lifecycle transactions elsewhere in this repository belong to the previous contract at `0xC25E6be425d940BB4b794932b1226D4bccD21824` and must not be attributed to this deployment.
+Deployment receipt and source/schema retrieval were verified with GenLayer CLI 0.39.1 against the official Studionet RPC. Current-source exact-text lifecycle and semantic baseline/revalidation proofs have also passed; hashes and typed results are recorded in `SUBMISSION.md`. Older detailed lifecycle transactions remain labeled as previous-deployment evidence.
 
 ## Previous deployment
 
