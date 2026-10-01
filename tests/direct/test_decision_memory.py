@@ -278,3 +278,144 @@ def test_semantic_web_assessment_rechecks_content_and_rejects_false_typed_leader
         assert contract.get_decision("S1")["baseline_snapshot_hash"]
     finally:
         context.__exit__(None, None, None)
+
+
+def _single_exact_assumption(url="https://example.com/exact", marker="licensed", criticality="CRITICAL"):
+    return json.dumps([{
+        "assumption_id": "exact",
+        "statement": "The frozen exact marker remains published.",
+        "criticality": criticality,
+        "evaluation_mode": "EXACT_TEXT",
+        "sources": [{"url": url, "retrieval_kind": "WEB_RENDER_HTML", "match_text": marker}],
+    }])
+
+
+def _register_exact(contract, decision_id="E1", url="https://example.com/exact", marker="licensed", criticality="CRITICAL"):
+    return contract.register_decision(
+        decision_id, "subject:exact", "Use only while marker is present.", "The frozen marker must remain present.",
+        _single_exact_assumption(url, marker, criticality), "[]", 3600, 600,
+    )
+
+
+def test_exact_text_challenge_cannot_replace_frozen_marker_and_legitimate_challenge_works():
+    vm, context, contract = deploy(mock_sources=False)
+    try:
+        original = "https://example.com/exact"
+        attacker = "https://attacker.example/challenge"
+        vm.mock_web(original, {"status": 200, "body": "licensed"})
+        _register_exact(contract)
+        contract.establish_baseline("E1")
+        vm.clear_mocks()
+        vm.mock_web(original, {"status": 200, "body": "license revoked"})
+        contract.revalidate("E1", '["exact"]')
+        assert contract.get_reliance_status("E1") == "INVALIDATED"
+        vm.clear_mocks()
+        vm.mock_web(attacker, {"status": 200, "body": "everything-is-fine"})
+        hostile = contract.challenge_revalidation("E1", "exact", "NEW_EVIDENCE", attacker, "everything-is-fine")
+        assert hostile["finding"]["support_state"] == "CONTRADICTED"
+        assert contract.get_reliance_status("E1") == "INVALIDATED"
+        frozen = contract.get_decision("E1")["assumptions"][0]["sources"][0]["match_text"]
+        assert frozen == "licensed"
+
+        vm.clear_mocks()
+        vm.mock_web(attacker, {"status": 200, "body": "registry confirms licensed status"})
+        legitimate = contract.challenge_revalidation("E1", "exact", "NEW_EVIDENCE", attacker, "The registry contains the frozen marker.")
+        assert legitimate["finding"]["support_state"] == "SUPPORTED"
+        assert contract.get_decision("E1")["assumptions"][0]["sources"][0]["match_text"] == "licensed"
+    finally:
+        context.__exit__(None, None, None)
+
+
+def test_exact_text_multiple_sources_reject_ambiguous_frozen_markers():
+    vm, context, contract = deploy(mock_sources=False)
+    try:
+        two = json.dumps([{
+            "assumption_id": "exact", "statement": "A frozen marker is present.", "criticality": "MAJOR",
+            "evaluation_mode": "EXACT_TEXT", "sources": [
+                {"url": "https://example.com/a", "retrieval_kind": "WEB_RENDER_HTML", "match_text": "alpha"},
+                {"url": "https://example.com/b", "retrieval_kind": "WEB_RENDER_HTML", "match_text": "beta"},
+            ],
+        }])
+        with vm.expect_revert("ambiguous match_text"):
+            contract.register_decision("E1", "s", "p", "policy", two, "[]", 3600, 600)
+    finally:
+        context.__exit__(None, None, None)
+
+
+def test_successor_linkage_is_authorized_at_registration_boundary():
+    vm, context, contract = deploy(mock_sources=False)
+    creator = "0x" + "11" * 20
+    stranger = "0x" + "22" * 20
+    try:
+        with vm.prank(creator):
+            _register_exact(contract, "P1")
+        with vm.prank(stranger):
+            with vm.expect_revert("only predecessor creator"):
+                contract.create_successor("P1", "P2", "new", "policy", _single_exact_assumption(), "[]", "POLICY_CHANGED")
+            with vm.expect_revert("only predecessor creator"):
+                contract.register_decision("P3", "s", "p", "policy", _single_exact_assumption(), "[]", 3600, 600, "P1", "POLICY_CHANGED")
+        assert contract.get_successor("P1")["successor_id"] == ""
+        with vm.prank(creator):
+            contract.create_successor("P1", "P2", "new", "policy", _single_exact_assumption(), "[]", "POLICY_CHANGED")
+            with vm.expect_revert("already has a successor"):
+                contract.create_successor("P1", "P4", "newer", "policy", _single_exact_assumption(), "[]", "POLICY_CHANGED")
+        assert contract.get_successor("P1")["successor_id"] == "P2"
+    finally:
+        context.__exit__(None, None, None)
+
+
+def test_validator_rejects_forged_content_and_render_hashes():
+    vm, context, contract = deploy()
+    try:
+        register(contract)
+        contract.establish_baseline("D1")
+        vm.clear_mocks()
+        vm.mock_web("https://example.com/license", {"status": 200, "body": "Provider remains licensed"})
+        vm.mock_web("https://example.com/terms", {"status": 200, "body": "Provider terms remain published"})
+        reports = contract._consensus_findings(contract._load("D1"), ["license", "service"])
+        for target_hash in ("content_hash", "render_hash"):
+            forged = json.loads(json.dumps(reports))
+            forged[0]["evidence_receipts"][0][target_hash] = "forged-hash"
+            assert vm.run_validator(leader_result=forged) is False
+    finally:
+        context.__exit__(None, None, None)
+
+
+def test_replay_validator_requires_exact_typed_outcome_but_ignores_explanation_digest():
+    vm, context, contract = deploy()
+    try:
+        register(contract)
+        contract.establish_baseline("D1")
+        vm.mock_llm("Evaluate the frozen decision baseline", json.dumps({"replay_result": "WOULD_DEGRADE", "finding_digest": "leader explanation"}))
+        contract.create_counterfactual_replay("D1", "Policy v2")
+        forged = {"replay_result": "WOULD_DEGRADE", "finding_digest": "leader explanation"}
+        vm._llm_mocks[0] = (vm._llm_mocks[0][0], json.dumps({"replay_result": "INCONCLUSIVE", "finding_digest": "validator explanation"}))
+        assert vm.run_validator(leader_result=forged) is False
+        same = {"replay_result": "INCONCLUSIVE", "finding_digest": "different leader explanation"}
+        assert vm.run_validator(leader_result=same) is True
+    finally:
+        context.__exit__(None, None, None)
+
+
+def test_duplicate_challenge_rejected_without_consuming_quota_and_distinct_challenges_work():
+    vm, context, contract = deploy()
+    try:
+        register(contract)
+        contract.establish_baseline("D1")
+        url = "https://example.net/new-evidence"
+        vm.mock_web(url, {"status": 200, "body": "Registry confirms licensed provider"})
+        args = ("D1", "license", "NEW_EVIDENCE", url, "registry confirms license")
+        first = contract.challenge_revalidation(*args)
+        assert first["result"] == "UPHELD"
+        with vm.expect_revert("duplicate challenge"):
+            contract.challenge_revalidation(*args)
+        assert contract.get_decision("D1")["challenge_count"] == 1
+        second = contract.challenge_revalidation("D1", "license", "FACTUAL_ERROR", url, "registry independently confirms license")
+        assert second["challenge_id"] != first["challenge_id"]
+        third = contract.challenge_revalidation("D1", "service", "SOURCE_CORRECTION", "https://example.net/terms", "published terms remain")
+        assert third["challenge_id"] != second["challenge_id"]
+        with vm.expect_revert("challenge round limit"):
+            contract.challenge_revalidation("D1", "service", "NEW_EVIDENCE", "https://example.net/terms-2", "another distinct claim")
+        assert contract.get_decision("D1")["challenge_count"] == 3
+    finally:
+        context.__exit__(None, None, None)

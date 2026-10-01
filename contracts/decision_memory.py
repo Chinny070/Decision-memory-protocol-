@@ -120,6 +120,14 @@ def _validate_assumptions(items):
             if mode == "EXACT_TEXT" and not clean.get("match_text"):
                 raise gl.vm.UserError("EXACT_TEXT assumptions require match_text")
             clean_sources.append(clean)
+        if mode == "EXACT_TEXT":
+            markers = []
+            for source in clean_sources:
+                marker = source.get("match_text", "")
+                if marker and marker not in markers:
+                    markers.append(marker)
+            if len(markers) != 1:
+                raise gl.vm.UserError("EXACT_TEXT sources require one unambiguous match_text")
         result.append({"assumption_id": aid, "statement": statement, "criticality": criticality, "evaluation_mode": mode, "sources": clean_sources})
     return result
 
@@ -143,16 +151,6 @@ def _validate_dependencies(items, current_id):
 
 def _support_rank(value):
     return {"SUPPORTED": 0, "WEAKENED": 1, "INSUFFICIENT": 2, "UNAVAILABLE": 2, "CONTRADICTED": 3}.get(value, 2)
-
-
-def _replay_equivalence_class(value):
-    if value == "WOULD_REMAIN_RELIABLE":
-        return "RELIABLE"
-    if value == "WOULD_INVALIDATE":
-        return "INVALIDATE"
-    if value in ("WOULD_DEGRADE", "WOULD_REQUIRE_REVIEW", "INCONCLUSIVE"):
-        return "CAUTION"
-    return "INVALID"
 
 
 def _derive_semantic_status(assumptions, findings, minor_points, major_count, critical_count):
@@ -265,6 +263,7 @@ class DecisionMemory(gl.Contract):
     latest_challenge_by_decision: TreeMap[str, str]
     receipt_ids: DynArray[str]
     challenge_ids: DynArray[str]
+    challenge_identity_ids: DynArray[str]
     replay_ids: DynArray[str]
     impact_ids: DynArray[str]
     next_impact_number: u32
@@ -321,11 +320,11 @@ class DecisionMemory(gl.Contract):
                 for evidence in evidence_items:
                     evidence_receipts.append({"source_url": evidence["url"], "retrieval_kind": evidence["kind"], "render_hash": _hash(evidence["raw_content"]) if evidence["kind"] == "WEB_RENDER_HTML" and evidence["status"] == "AVAILABLE" else "0", "content_hash": _hash(evidence["content"]) if evidence["status"] == "AVAILABLE" else "0", "normalization_version": NORMALIZATION_VERSION, "source_role": "ASSUMPTION_EVIDENCE", "assumption_ids": [assumption["assumption_id"]], "observation_status": evidence["status"]})
                 if assumption["evaluation_mode"] == "EXACT_TEXT":
-                    marker = evaluation_context if evidence_override else ""
-                    if not evidence_override:
-                        for source in assumption["sources"]:
-                            if source.get("match_text"):
-                                marker = source["match_text"]
+                    markers = []
+                    for source in assumption["sources"]:
+                        marker = source.get("match_text", "")
+                        if marker and marker not in markers:
+                            markers.append(marker)
                     available = False
                     matched = False
                     for evidence in evidence_items:
@@ -333,7 +332,7 @@ class DecisionMemory(gl.Contract):
                             available = True
                             if evidence_override and evidence["url"] != evidence_override:
                                 continue
-                            if marker and marker in evidence["content"]:
+                            if markers and any(marker in evidence["content"] for marker in markers):
                                 matched = True
                     if matched:
                         report = {"assumption_id": assumption["assumption_id"], "support_state": "SUPPORTED", "materiality": "NO_MATERIAL_CHANGE", "evidence_sufficient": True, "external_failure": False, "critical_conflict": False, "stable_fact_codes": ["EXACT_TEXT_PRESENT"], "explanation": "", "evidence_receipts": evidence_receipts}
@@ -387,7 +386,7 @@ class DecisionMemory(gl.Contract):
                 independent_receipts = independent[index].get("evidence_receipts", [])
                 if len(candidate_receipts) != len(independent_receipts):
                     return False
-                receipt_fields = ("source_url", "retrieval_kind", "normalization_version", "source_role", "assumption_ids", "observation_status")
+                receipt_fields = ("source_url", "retrieval_kind", "render_hash", "content_hash", "normalization_version", "source_role", "assumption_ids", "observation_status")
                 for receipt_index in range(len(candidate_receipts)):
                     for field in receipt_fields:
                         if candidate_receipts[receipt_index].get(field) != independent_receipts[receipt_index].get(field):
@@ -531,6 +530,8 @@ class DecisionMemory(gl.Contract):
                 raise gl.vm.UserError("dependency fanout limit reached")
         if predecessor_id:
             predecessor = self._load(predecessor_id)
+            if str(gl.message.sender_address) != predecessor.get("creator", ""):
+                raise gl.vm.UserError("only predecessor creator may create its successor")
             if predecessor.get("successor_id", ""):
                 raise gl.vm.UserError("predecessor already has a successor")
             _safe_enum(successor_reason, SUCCESSOR_REASONS, "successor_reason")
@@ -635,10 +636,9 @@ class DecisionMemory(gl.Contract):
             if not isinstance(candidate.get("finding_digest"), str) or len(candidate.get("finding_digest")) > 64:
                 return False
             independent = evaluate_replay()
-            # Explanatory digests can vary across model providers. Equivalence
-            # is the typed counterfactual outcome; the contract creates its own
-            # deterministic receipt digest after consensus.
-            return _replay_equivalence_class(candidate.get("replay_result")) == _replay_equivalence_class(independent.get("replay_result")) and _replay_equivalence_class(candidate.get("replay_result")) != "INVALID"
+            # The exact typed outcome is stored and exposed, so validators must
+            # independently agree on that same enum. Explanatory digests may vary.
+            return candidate.get("replay_result") == independent.get("replay_result")
 
         report = gl.vm.run_nondet_unsafe(evaluate_replay, validate_replay)
         if not isinstance(report, dict) or report.get("replay_result") not in REPLAY:
@@ -671,6 +671,9 @@ class DecisionMemory(gl.Contract):
             raise gl.vm.UserError("unknown assumption id")
         if len(self.challenge_ids) >= MAX_DECISIONS * MAX_CHALLENGES:
             raise gl.vm.UserError("challenge receipt capacity reached")
+        challenge_identity = _hash({"decision_id": decision_id, "assumption_id": assumption_id, "reason_code": reason_code, "new_evidence_url": new_evidence_url, "factual_ground_hash": _hash(factual_ground)})
+        if challenge_identity in self.challenge_identity_ids:
+            raise gl.vm.UserError("duplicate challenge")
         old_status = self._effective_contract_status(decision, _now())
         reports = self._consensus_findings(decision, [assumption_id], new_evidence_url, factual_ground)
         if not self._valid_report(reports, [assumption_id]):
@@ -690,6 +693,7 @@ class DecisionMemory(gl.Contract):
         challenge = {"challenge_id": receipt_id, "decision_id": decision_id, "assumption_id": assumption_id, "challenged_revalidation_id": decision["latest_revalidation_digest"], "reason_code": reason_code, "factual_ground_hash": _hash(factual_ground), "new_evidence_url": new_evidence_url, "finding": report, "result": result, "created_at": now}
         self.challenge_receipts[receipt_id] = _canonical(challenge)
         self.challenge_ids.append(receipt_id)
+        self.challenge_identity_ids.append(challenge_identity)
         self.latest_challenge_by_decision[decision_id] = receipt_id
         decision["challenge_count"] += 1
         current_findings = decision.get("current_findings", {})
