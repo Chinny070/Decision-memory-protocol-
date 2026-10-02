@@ -22,15 +22,18 @@ _requests_post = requests.post
 
 def _retry_rpc_reads(*args, **kwargs):
     method = (kwargs.get("json") or {}).get("method", "")
-    if method not in {"eth_getTransactionByHash", "eth_call", "gl_getTransactionReceipt"}:
+    kwargs.setdefault("timeout", (10, 45))
+    if method not in {"eth_getTransactionByHash", "eth_getTransactionReceipt", "eth_call", "gl_getTransactionReceipt"}:
         return _requests_post(*args, **kwargs)
-    for attempt in range(8):
+    for attempt in range(5):
         try:
-            return _requests_post(*args, **kwargs)
+            response = _requests_post(*args, **kwargs)
+            if response.status_code not in (502, 503, 504) or attempt == 4:
+                return response
         except requests.exceptions.RequestException:
-            if attempt == 7:
+            if attempt == 4:
                 raise
-            time.sleep(min(2 + attempt, 8))
+        time.sleep(min(1 + attempt, 3))
 
 
 requests.post = _retry_rpc_reads

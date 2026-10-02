@@ -17,7 +17,7 @@
 - Deploy transaction: `0x509b1314e9d6e96792427b135ba3c0260dcf1af3fb8b05fb0f234cf8ca81ec56`, `FINALIZED` / `MAJORITY_AGREE`.
 - Schema: 22 methods (14 views, 8 writes).
 - Retrieved source exact match: normalized SHA-256 `eafa0b94585c0110889dd2cc3fdced1bc667853e74712eef6e4eef3933ffd699`; local blob `ab348789bba2d2c5cd089c1774e6059942f5a55b`.
-- The current address has finalized semantic baseline and full revalidation. A broader lifecycle run finalized through replay and challenge, then receipt polling received RPC HTTP 502; unavailable-source and dependency propagation are not claimed for this address.
+- The current address passed the complete lifecycle: exact-text baseline/revalidation, counterfactual replay, challenge, unavailable-source fail-closed handling, and bounded dependency propagation. All transaction hashes and typed results are recorded in `docs/VERIFICATION.md`.
 - Current-source semantic baseline and full revalidation both finalized with `MAJORITY_AGREE` and `RELIABLE`; transaction hashes are in `docs/VERIFICATION.md`. The Direct Mode adversarial suite includes the steward-requested conflicting-field test.
 - Contract source matches blob `ab348789bba2d2c5cd089c1774e6059942f5a55b` in GitHub `main` commit `08addb48a6d554596fe9e5ef395e6ba1e5b3f7ff`.
 
@@ -45,7 +45,7 @@
 - Historical `0x9aF3...` semantic baseline: `RELIABLE`, `FINALIZED` / `MAJORITY_AGREE`, transaction `0xd61a3efdde33e445da32becc2c792f4347079485b68a277b17b0b321185dad3d`.
 - Historical `0x9aF3...` semantic full revalidation: `RELIABLE`, `FINALIZED` / `MAJORITY_AGREE`, transaction `0x3fb37f4492408cc9268445f6e0b283a8be266105ecdc876dc59f263ba50cb1b8`.
 - Historical `0x9aF3...` exact-text baseline and full revalidation: both `RELIABLE`.
-- Current `0xC3c...` semantic baseline/revalidation, replay, and challenge are finalized; broader run stopped on RPC 502 before current-address unavailable-source and dependency-propagation proofs.
+- Current `0xC3c...` complete lifecycle finalized, including unavailable-source `NEEDS_REVIEW` and `impact_4` dependency propagation.
 
 ### Historical previous-address proofs
 
@@ -60,4 +60,4 @@
 
 ## Remaining release gate
 
-The steward-fix deployment and exact source parity are verified; see the current deployment details in `docs/DEPLOYMENT.md` and adversarial proof in `docs/VERIFICATION.md`. Current-source Direct Mode (22), lint (3 checks), and schema (22 methods) passed in the workspace. The steward fix has adversarial test coverage and is deployed with exact source parity; current-address semantic integration proofs passed. Challenge-budget and semantic supplemental-evidence authority tradeoffs are described in `DECISION.md` and `docs/SECURITY.md`.
+The steward-fix deployment and exact source parity are verified; see the current deployment details in `docs/DEPLOYMENT.md` and adversarial proof in `docs/VERIFICATION.md`. Current-source Direct Mode (22), lint (3 checks), and schema (22 methods) passed in the workspace. The steward fix has adversarial test coverage, exact deployed-source parity, and complete current-address semantic and exact-text lifecycle proofs. Challenge-budget and semantic supplemental-evidence authority tradeoffs are described in `DECISION.md` and `docs/SECURITY.md`.

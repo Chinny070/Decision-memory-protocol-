@@ -72,4 +72,4 @@ Install pinned dependencies and run the committed integration folder against hos
 gltest tests/integration/ -v -s --network studionet
 ```
 
-Hosted tests create disposable deployments. They are not the canonical deployment. The successful canonical run used exact-text evidence and does not clear the separate unresolved live semantic-mode revalidation. The canonical deployment and source parity are recorded in `docs/DEPLOYMENT.md`; exact transaction hashes and statuses are in `SUBMISSION.md`.
+Hosted tests create disposable deployments. They are not the canonical deployment. The current canonical Studionet deployment has finalized semantic and exact-text baselines and full revalidations, counterfactual replay, evidence-backed challenge, unavailable-source fail-closed handling, and bounded dependency propagation. The canonical deployment and source parity are in `docs/DEPLOYMENT.md`; transaction hashes and statuses are in `docs/VERIFICATION.md`.

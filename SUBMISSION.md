@@ -14,7 +14,7 @@ Current source: 22 Direct Mode tests passed, 3 GenVM lint checks passed, 22-meth
 
 - Semantic baseline `0xda093eb850af5749a1f7daacea71363da4beb4f26cdf7804f7aeb6c37d07bd66`: `FINALIZED` / `MAJORITY_AGREE`, `RELIABLE`.
 - Full semantic revalidation `0x5e255e514f4acd1473b10437de5a959c19a2736fbe34f18ee69aae61efed01ba`: `FINALIZED` / `MAJORITY_AGREE`, `RELIABLE`.
-- A broader lifecycle run on this deployment finalized registration, baseline, revalidation, replay (`WOULD_REQUIRE_REVIEW`), and challenge (`UPHELD`), then receipt polling received RPC HTTP 502. The remaining unavailable-source and dependency-propagation checks are not claimed as passed. Transaction detail is in `docs/VERIFICATION.md`.
+- A broader lifecycle run on this deployment finalized registration, baseline, revalidation, replay (`WOULD_REQUIRE_REVIEW`), and challenge (`UPHELD`), then receipt polling received RPC HTTP 502. A complete rerun passed all lifecycle steps, including unavailable-source fail-closed handling and bounded dependency propagation. Transaction detail is in `docs/VERIFICATION.md`.
 
 ## Previous deployment details
 
@@ -29,8 +29,8 @@ Current source: 22 Direct Mode tests passed, 3 GenVM lint checks passed, 22-meth
 | Gate | Status | Evidence |
 | --- | --- | --- |
 | Contract / runtime | Green for local verification | Current source: 22 Direct Mode tests, 3 GenVM lint checks, and 22-method schema pass. GitHub clean-clone verification is recorded in `docs/VERIFICATION.md`. |
-| Real consensus | Green for deployment and semantic proof; broader lifecycle partial | Deployment plus semantic baseline/revalidation finalized with majority agreement. The latest broad run stopped on receipt polling HTTP 502 before unavailable-source and dependency proofs on this address.
-| Real evidence | Green for exact-text and semantic proofs | On the current deployment, semantic baseline and full revalidation both finalized with `MAJORITY_AGREE` and reported `RELIABLE`. Earlier exact-text and dependency lifecycle evidence is from the superseded `0x9aF3...` address and is historical. |
+| Real consensus | Green | The current deployment, semantic proof, and all 10 writes in the current-address lifecycle finalized with majority agreement.
+| Real evidence | Green | Current deployment browser-render baseline and revalidation were `RELIABLE`; unavailable source yielded `NEEDS_REVIEW`; counterfactual replay and challenge finalized; hashes below. |
 | Steward-requested semantic safety fix | Green | Cross-field report validation, reducer defense-in-depth, contradictory-field adversarial test, current GitHub source, and deployed source parity are recorded above and in `docs/VERIFICATION.md`. |
 
 ## Submission copy (current gate evidence recorded above)
@@ -47,13 +47,13 @@ Current source: 22 Direct Mode tests passed, 3 GenVM lint checks passed, 22-meth
 - **Failure policy:** Insufficient evidence, source failure, or consensus disagreement never creates affirmative reliance; transaction-level disagreement is not an application status.
 - **Reuse surface:** `get_reliance_certificate`, `get_reliance_status`, `is_reliable`, plus bounded lifecycle writes.
 - **Verified local checks:** Current source: 22 Direct Mode tests passed, 3 GenVM lint checks passed, and 22-method schema passed. Clean clone of GitHub commit `9d06206f62b4e89d0f8e2d0f5dbdf4962a0e2041` also passed all three checks after dependency pins resolved from the installed Python environment.
-- **Verified live checks:** Current deployment receipt, schema, source parity, adversarial safety test, and semantic baseline/revalidation are verified. The new-address broad lifecycle run stopped on an RPC 502 during receipt polling; unavailable-source and dependency-propagation proofs on the new address remain unverified.
+- **Verified live checks:** Current deployment receipt, schema, source parity, adversarial safety test, semantic and exact-text baselines/revalidation, replay, challenge, unavailable-source handling, and dependency propagation are verified. One earlier live attempt hit an RPC error; the successful rerun is fully recorded in `docs/VERIFICATION.md`.
 - **Reviewer fast path:** `README.md`, `DECISION.md`, `docs/ARCHITECTURE.md`, `docs/INVARIANTS.md`, `docs/CONSENSUS.md`, and `docs/RELEASE_CANDIDATE_VERIFICATION.md`.
-- **Portal description:** Decision Memory Protocol is a reusable GenLayer Intelligent Contract that preserves decision context and critical assumptions, revalidates them against independently retrieved evidence, and gives downstream contracts a machine-readable reliance certificate. Validators independently assess external evidence; deterministic contract logic derives reliance state, lease freshness, successor lineage, and bounded dependency impact. It includes immutable counterfactual replay and fail-closed evidence handling. Current-source Direct Mode, GenVM validation, deployed-source parity, and semantic baseline/revalidation pass. Earlier full lifecycle rows below are historical evidence for the superseded `0x9aF3...` deployment.
+- **Portal description:** Decision Memory Protocol is a reusable GenLayer Intelligent Contract that preserves decision context and critical assumptions, revalidates them against independently retrieved evidence, and gives downstream contracts a machine-readable reliance certificate. Validators independently assess external evidence; deterministic contract logic derives reliance state, lease freshness, successor lineage, and bounded dependency impact. It includes immutable counterfactual replay and fail-closed evidence handling. Current-source Direct Mode, GenVM validation, deployed-source parity, and the complete current-address live lifecycle pass. The separately labeled `0x9aF3...` rows below are historical.
 
 ## Historical lifecycle evidence for superseded `0x9aF3...` deployment
 
-These transactions ran against the previous `0x9aF3...` deployment before the steward-requested semantic cross-field fix. They are historical evidence and do not prove the new deployment’s unavailable-source or dependency-propagation behavior.
+These transactions ran against the previous `0x9aF3...` deployment before the steward-requested semantic cross-field fix. They are historical evidence; current-deployment lifecycle evidence is listed in `docs/VERIFICATION.md`.
 
 | Proof | Transaction | Verified result |
 | --- | --- | --- |

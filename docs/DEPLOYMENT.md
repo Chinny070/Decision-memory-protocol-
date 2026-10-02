@@ -13,7 +13,7 @@
 - Explorer address: https://explorer-studio.genlayer.com/address/0xC3c63aB9459fd8BC87fa29161e2019F7d454B643.
 - Explorer transaction: https://explorer-studio.genlayer.com/tx/0x509b1314e9d6e96792427b135ba3c0260dcf1af3fb8b05fb0f234cf8ca81ec56.
 
-This deployment includes the semantic cross-field fail-closed fix requested by the steward. The new address's semantic baseline and full revalidation finalized with `MAJORITY_AGREE` and `RELIABLE`; their transaction hashes are recorded in `docs/VERIFICATION.md`. A broader current-address lifecycle run reached replay and challenge but receipt polling then received an RPC 502. The unavailable-source and dependency-propagation portions have not been verified on this address. The older `0x9aF3...` lifecycle records below are historical and must not be attributed to this deployment.
+This deployment includes the semantic cross-field fail-closed fix requested by the steward. The new address's semantic baseline and full revalidation finalized with `MAJORITY_AGREE` and `RELIABLE`; their transaction hashes are recorded in `docs/VERIFICATION.md`. The full current-address lifecycle finalized with majority agreement, including unavailable-source handling (`NEEDS_REVIEW`) and bounded dependency propagation (`impact_4` complete). The older `0x9aF3...` lifecycle records below are historical and must not be attributed to this deployment.
 
 ## Previous-source deployment
 

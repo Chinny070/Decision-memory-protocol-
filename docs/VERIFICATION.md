@@ -37,7 +37,26 @@ The contract pins the official `py-genlayer` SDK through the dependency header. 
 - Direct adversarial test: `test_report_validation_rejects_incoherent_evidence_safety_fields` rejects contradictory combinations through both `_valid_report` paths and confirms the reliable baseline remains unchanged. It covers insufficient evidence paired with `SUPPORTED/NO_MATERIAL_CHANGE`, external failure paired with supported findings, false unavailable typing, and unsupported critical conflict.
 - Current-source checks: 22 Direct Mode tests passed; GenVM lint passed 3 checks; ABI schema passed at 22 methods (14 view, 8 write).
 - Current-address semantic baseline `0xda093eb850af5749a1f7daacea71363da4beb4f26cdf7804f7aeb6c37d07bd66` and full revalidation `0x5e255e514f4acd1473b10437de5a959c19a2736fbe34f18ee69aae61efed01ba` both finalized with `MAJORITY_AGREE`; both reliance statuses were `RELIABLE`.
-- Broader current-address lifecycle attempt: registration `0x098aff02c9b44e0f30af89a90470b4e09255181a559cd51f790274c04055560a`, baseline `0x159ff207f1d3882c6a57ed36d904937a4c535bf9052524271c4db1bb83b8f22b`, revalidation `0x726eea5970fc293d90c22c09bb4b07de56271e207991ac8772d8ce31c0d44829`, replay `0x6725d35b168cf146d30a1bc82e06a5ae51c1c576773fb4f857421fcecf7d5660`, challenge `0x2744efafba49679ff344902b1c629d3e8c9d5ffd0572099f604ef5d70d8fea91`. These reached finalized consensus; the run then stopped when an RPC receipt read returned HTTP 502. Therefore this run does not prove unavailable-source or dependency propagation at this new address.
+- Earlier partial current-address lifecycle attempt: registration `0x098aff02c9b44e0f30af89a90470b4e09255181a559cd51f790274c04055560a`, baseline `0x159ff207f1d3882c6a57ed36d904937a4c535bf9052524271c4db1bb83b8f22b`, revalidation `0x726eea5970fc293d90c22c09bb4b07de56271e207991ac8772d8ce31c0d44829`, replay `0x6725d35b168cf146d30a1bc82e06a5ae51c1c576773fb4f857421fcecf7d5660`, challenge `0x2744efafba49679ff344902b1c629d3e8c9d5ffd0572099f604ef5d70d8fea91`. These five writes finalized; that attempt then stopped on RPC HTTP 502 and did not complete the later checks. It is not counted as a full lifecycle pass.
+
+## Current-address full lifecycle transaction record
+
+Network: GenLayer Studionet. Contract: [`0xC3c63aB9459fd8BC87fa29161e2019F7d454B643`](https://explorer-studio.genlayer.com/address/0xC3c63aB9459fd8BC87fa29161e2019F7d454B643). Every write below finalized with `MAJORITY_AGREE`.
+
+| Lifecycle step | Transaction | Verified result |
+| --- | --- | --- |
+| Register exact-text decision `live-docs-25004` | `0xc56ed42ac33a1c2c11f94c00b109e4c2a61112971dba3b4715d6510e52740599` | `FINALIZED` / `MAJORITY_AGREE` |
+| Browser-render baseline | `0x915cfa880c1bc372120b92314ef96f56a33a5dedc2a77178e1b556e53e7b07e8` | `FINALIZED`; `RELIABLE` |
+| Full revalidation | `0xef8e87e0e8bf34c1612168eabafe655510f8c76ac53b24ce4d9f88c7d6a42eec` | `FINALIZED`; `RELIABLE` |
+| Counterfactual replay | `0x51ba1cef592201cfca9924f11a1c3702f061201b547e03439c62ebea916da2fb` | `FINALIZED` / `MAJORITY_AGREE`; `WOULD_REQUIRE_REVIEW`; original definition hash unchanged |
+| Evidence-backed challenge | `0x62255b0b36baf1be35e4de71fbbad8d5d4056098de0f948c67285c6dd2e57de1` | `FINALIZED`; `UPHELD` |
+| Register unavailable-source decision | `0xc91a373b6897c7c293761730ac6f719dfcfe7ebca684d34214f60a5a66bace79` | `FINALIZED` / `MAJORITY_AGREE` |
+| Unavailable-source baseline | `0x2e609db58db4df488b0802d6fae29d84330ba307bc69d59fafcdcb514e9a89b6` | `FINALIZED`; `NEEDS_REVIEW`, not `RELIABLE` or `INVALIDATED` |
+| Register hard-dependent decision | `0x45d00a78ae910b44775125d6507fe0ce90709a3582e760d9864113a3ee25fd66` | `FINALIZED` / `MAJORITY_AGREE` |
+| Hard-dependent baseline | `0xec131dada083a07853f823af9b75d3a623b58091b955db6a5fcf72e43d728916` | `FINALIZED`; dependent status reviewable |
+| Bounded impact propagation | `0x35ca1a26b3d6e89a179208d7e56a11d9960e4c45071f9037dae6c1173890014e` | `FINALIZED` / `MAJORITY_AGREE`; `impact_4` complete |
+
+The command `gltest tests/integration/test_studionet_lifecycle.py -v -s --network studionet` passed (`1 passed`) in 519.20 seconds. The helper bounds HTTP request timeouts, retries transient reads only, and never retries transaction submissions. One earlier attempt was interrupted by an RPC connection failure and is not counted.
 
 ## Test scope
 
@@ -56,7 +75,7 @@ Direct Mode covers the protocol lifecycle and adversarial regressions for frozen
 - `test_replay_validator_requires_exact_typed_outcome_but_ignores_explanation_digest`: enum disagreement fails while explanation variance passes.
 - `test_duplicate_challenge_rejected_without_consuming_quota_and_distinct_challenges_work`: exact duplicate is free of quota impact, distinct challenges count, and the cap holds.
 
-The pinned `genlayer-test==0.29.2` and `genlayer-py==0.16.3` expose `transact(wait_transaction_status=TransactionStatus.FINALIZED, wait_interval=3000, wait_retries=50)`. The lifecycle helper requests FINALIZED explicitly with a bounded 150-second wait and requires `FINALIZED` plus `MAJORITY_AGREE` before dependent reads. Read-only RPC polling retries transient transport failures; transaction submissions are not retried. The successful run below used this helper against the current deployment. Earlier runs experienced transient RPC DNS/reset errors and are not counted as successful runs.
+The pinned `genlayer-test==0.29.2` and `genlayer-py==0.16.3` expose `transact(wait_transaction_status=TransactionStatus.FINALIZED, wait_interval=3000, wait_retries=50)`. The lifecycle helper requests FINALIZED explicitly with a bounded 150-second wait and requires `FINALIZED` plus `MAJORITY_AGREE` before dependent reads. Read-only RPC polling retries transient transport failures and gateway responses with bounded timeouts; transaction submissions are not retried. The successful run below used this helper against the current deployment. Earlier runs experienced transient RPC DNS/reset errors and are not counted as successful runs.
 
 ## Historical Studionet lifecycle on superseded `0x9aF3...` deployment
 
