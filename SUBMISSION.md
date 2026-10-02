@@ -6,7 +6,7 @@
 
 The current repository source includes targeted fixes for EXACT_TEXT challenge evidence authority and unavailable selected-source handling, along with predecessor successor-slot authorization, evidence render/content hash validator binding, replay exact-enum consensus, and duplicate challenge quota exhaustion. Current source has 20 Direct Mode passes, 3 GenVM lint checks, a 22-method schema, and a clean temporary candidate-clone check. Its Studionet deployment and retrieved-source parity are verified below; current-address application lifecycle proofs remain pending.
 
-**Current deployment:** `0x9aF3aa61bEF38Abb597d7078F36659CBaFd65610`, transaction `0x20b1ff738043da829594a4e0f3f5311beafe5f4d06996ff4bb231891ef53206b`, `FINALIZED` / `MAJORITY_AGREE`. Retrieved-source parity with the current contract file is verified (SHA-256 `a5fed29ee04bb9da09a188712108420ef03472fe3062b745c553b860470c2aa1`; blob `c27f7ee4c97f8b9edc5ec42a7b9db772e5c6fe37`). The matching temporary candidate snapshot is `f8919a885dcd24bcabda5e03d51c8b9c77175062`; workspace `.git` is read-only, so it is not a commit on the project branch or GitHub.
+**Current deployment:** `0x9aF3aa61bEF38Abb597d7078F36659CBaFd65610`, transaction `0x20b1ff738043da829594a4e0f3f5311beafe5f4d06996ff4bb231891ef53206b`, `FINALIZED` / `MAJORITY_AGREE`. Retrieved-source parity with the contract file is verified (SHA-256 `a5fed29ee04bb9da09a188712108420ef03472fe3062b745c553b860470c2aa1`; blob `c27f7ee4c97f8b9edc5ec42a7b9db772e5c6fe37`). The source is committed to GitHub `main` at `d5e2c75b7fdff60bbf078036ce48370e42acfa8b`; the local workspace checkout remains dirty because its `.git` is read-only.
 
 ## Previous deployment details
 
@@ -20,7 +20,7 @@ The current repository source includes targeted fixes for EXACT_TEXT challenge e
 
 | Gate | Status | Evidence |
 | --- | --- | --- |
-| Contract / runtime | Green for local verification | Current source: 20 Direct Mode tests, 3 GenVM lint checks, and 22-method schema pass in workspace and clean temporary candidate clone. FINALIZED-aware helper was inspected, not exercised against Studionet. Workspace `.git` is read-only, so no repository commit was created. |
+| Contract / runtime | Green for local verification | Current source: 20 Direct Mode tests, 3 GenVM lint checks, and 22-method schema pass in workspace and clean temporary candidate clone. Source is pushed to GitHub `main`. FINALIZED-aware helper was inspected, not exercised against Studionet. |
 | Real consensus | Partial | The current-source deployment reached finalized majority consensus. Application lifecycle transactions have not been run at the new address; previous-source exact-text and semantic proofs remain historical. |
 | Real evidence | Partial | Previous-source browser-rendered official documentation established reliable exact-text baseline/revalidation; semantic baseline/revalidation also returned `RELIABLE`. Current-address evidence lifecycle remains unverified. |
 | Steward fit | Partial | Rejection audit and DM1â€“DM15 map are documented. Current source has no live dependency propagation proof. Current candidate clean-clone check passed, but it is a temporary snapshot commit rather than a workspace repository commit. |
@@ -33,7 +33,7 @@ The current repository source includes targeted fixes for EXACT_TEXT challenge e
 - **Repository:** https://github.com/Chinny070/Decision-memory-protocol-
 - **Current Studionet address:** [0x9aF3aa61bEF38Abb597d7078F36659CBaFd65610](https://explorer-studio.genlayer.com/address/0x9aF3aa61bEF38Abb597d7078F36659CBaFd65610).
 - **Deployment transaction:** `0x20b1ff738043da829594a4e0f3f5311beafe5f4d06996ff4bb231891ef53206b`, `FINALIZED`, `MAJORITY_AGREE`.
-- **Deployment source:** current local contract file; normalized parity hash `a5fed29ee04bb9da09a188712108420ef03472fe3062b745c553b860470c2aa1`. No Git commit is available for these uncommitted workspace changes.
+- **Deployment source:** GitHub `main` commit `d5e2c75b7fdff60bbf078036ce48370e42acfa8b`; normalized parity hash `a5fed29ee04bb9da09a188712108420ef03472fe3062b745c553b860470c2aa1`.
 - **Why GenLayer:** Validators independently retrieve and interpret external evidence; one creator, API, or model must not author reliance alone.
 - **Consensus mechanism:** Custom leader/validator nondeterministic evaluation with typed substantive equivalence; deterministic code derives reliance and graph effects.
 - **Failure policy:** Insufficient evidence, source failure, or consensus disagreement never creates affirmative reliance; transaction-level disagreement is not an application status.

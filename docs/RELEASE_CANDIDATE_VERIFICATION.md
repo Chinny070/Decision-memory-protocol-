@@ -18,7 +18,7 @@
 - Schema: 22 methods (14 views, 8 writes).
 - Retrieved source exact match: normalized SHA-256 `a5fed29ee04bb9da09a188712108420ef03472fe3062b745c553b860470c2aa1`; local blob `c27f7ee4c97f8b9edc5ec42a7b9db772e5c6fe37`.
 - Current-address application lifecycle proofs have not yet been run.
-- Contract source matches blob `c27f7ee4c97f8b9edc5ec42a7b9db772e5c6fe37` in temporary candidate snapshot commit `f8919a885dcd24bcabda5e03d51c8b9c77175062`; that commit is not in the workspace repository or GitHub because the workspace `.git` is read-only.
+- Contract source matches blob `c27f7ee4c97f8b9edc5ec42a7b9db772e5c6fe37` in GitHub `main` commit `d5e2c75b7fdff60bbf078036ce48370e42acfa8b`. The local workspace checkout remains dirty because its `.git` is read-only.
 
 ## Previous deployment (earlier security-fix source)
 

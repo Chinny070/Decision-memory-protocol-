@@ -10,7 +10,7 @@
 - Retrieved-source normalized SHA-256: `a5fed29ee04bb9da09a188712108420ef03472fe3062b745c553b860470c2aa1`.
 - Local contract blob SHA-1: `c27f7ee4c97f8b9edc5ec42a7b9db772e5c6fe37`.
 - Source parity: verified; `genlayer code` output exactly matches the current `contracts/decision_memory.py` after removing CLI framing and normalizing line endings.
-- Source provenance: temporary candidate snapshot commit `f8919a885dcd24bcabda5e03d51c8b9c77175062` contains the deployed contract blob `c27f7ee4c97f8b9edc5ec42a7b9db772e5c6fe37`; this is not a commit in the workspace repository or GitHub. The workspace changes remain uncommitted because its `.git` directory is read-only.
+- Source provenance: GitHub `main` commit `d5e2c75b7fdff60bbf078036ce48370e42acfa8b` contains the deployed contract blob `c27f7ee4c97f8b9edc5ec42a7b9db772e5c6fe37`. The local workspace checkout remains dirty because its `.git` directory is read-only.
 - Explorer address: https://explorer-studio.genlayer.com/address/0x9aF3aa61bEF38Abb597d7078F36659CBaFd65610.
 - Explorer transaction: https://explorer-studio.genlayer.com/tx/0x20b1ff738043da829594a4e0f3f5311beafe5f4d06996ff4bb231891ef53206b.
 
