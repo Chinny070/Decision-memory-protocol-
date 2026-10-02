@@ -5,21 +5,21 @@
 - Previous deployed-source commit: `176136ee1bb507aee8aa86673741ee9d8792500d`.
 - Security-fix source commit: `2ae77cfca02bb81f770aa4e1838a846260decafa`.
 - Previous security-fix source commit `2ae77cfca02bb81f770aa4e1838a846260decafa`: 17 Direct Mode tests passed (includes adversarial security regressions).
-- Current source: 21 Direct Mode tests passed; GenVM lint passed 3 checks; schema unchanged at 22 methods (14 read, 8 write).
+- Current source: 22 Direct Mode tests passed; GenVM lint passed 3 checks; schema unchanged at 22 methods (14 read, 8 write).
 - Pickling/serialization: enabled in Direct Mode tests.
 - GenVM linter 0.11.0: 3 checks passed.
 - GenVM schema: 22 methods (14 read, 8 write).
-- Clean clone: GitHub commit `9d06206f62b4e89d0f8e2d0f5dbdf4962a0e2041` cloned directly from `main`; requirements resolved from already installed pins, 21 Direct Mode tests passed, lint passed 3 checks, and schema stayed at 22 methods.
+- Clean clone: GitHub commit `9d06206f62b4e89d0f8e2d0f5dbdf4962a0e2041` cloned directly from `main`; requirements resolved from already installed pins, 21 Direct Mode tests passed (pre-steward-fix snapshot), lint passed 3 checks, and schema stayed at 22 methods.
 
-## Current deployment (latest challenge-fix source)
+## Current deployment (steward semantic-safety fix)
 
-- Studionet contract: `0x9aF3aa61bEF38Abb597d7078F36659CBaFd65610`.
-- Deploy transaction: `0x20b1ff738043da829594a4e0f3f5311beafe5f4d06996ff4bb231891ef53206b`, `FINALIZED` / `MAJORITY_AGREE`.
+- Studionet contract: `0xC3c63aB9459fd8BC87fa29161e2019F7d454B643`.
+- Deploy transaction: `0x509b1314e9d6e96792427b135ba3c0260dcf1af3fb8b05fb0f234cf8ca81ec56`, `FINALIZED` / `MAJORITY_AGREE`.
 - Schema: 22 methods (14 views, 8 writes).
-- Retrieved source exact match: normalized SHA-256 `a5fed29ee04bb9da09a188712108420ef03472fe3062b745c553b860470c2aa1`; local blob `c27f7ee4c97f8b9edc5ec42a7b9db772e5c6fe37`.
-- Current-source exact-text lifecycle and bounded dependency propagation are finalized at the current address; see `docs/VERIFICATION.md` and `SUBMISSION.md` for each transaction hash and typed result.
-- Current-source semantic-mode baseline and full revalidation both finalized with `MAJORITY_AGREE` and `RELIABLE`; see the semantic proof table below.
-- Contract source matches blob `c27f7ee4c97f8b9edc5ec42a7b9db772e5c6fe37` in GitHub `main` commit `d5e2c75b7fdff60bbf078036ce48370e42acfa8b`. The local workspace checkout remains dirty because its `.git` is read-only.
+- Retrieved source exact match: normalized SHA-256 `eafa0b94585c0110889dd2cc3fdced1bc667853e74712eef6e4eef3933ffd699`; local blob `ab348789bba2d2c5cd089c1774e6059942f5a55b`.
+- The current address has finalized semantic baseline and full revalidation. A broader lifecycle run finalized through replay and challenge, then receipt polling received RPC HTTP 502; unavailable-source and dependency propagation are not claimed for this address.
+- Current-source semantic baseline and full revalidation both finalized with `MAJORITY_AGREE` and `RELIABLE`; transaction hashes are in `docs/VERIFICATION.md`. The Direct Mode adversarial suite includes the steward-requested conflicting-field test.
+- Contract source matches blob `ab348789bba2d2c5cd089c1774e6059942f5a55b` in GitHub `main` commit `08addb48a6d554596fe9e5ef395e6ba1e5b3f7ff`.
 
 ## Previous deployment (earlier security-fix source)
 
@@ -42,10 +42,10 @@
 
 ## Live proofs
 
-- Current-address semantic baseline: `RELIABLE`, `FINALIZED` / `MAJORITY_AGREE`, transaction `0xd61a3efdde33e445da32becc2c792f4347079485b68a277b17b0b321185dad3d`.
-- Current-address semantic full revalidation: `RELIABLE`, `FINALIZED` / `MAJORITY_AGREE`, transaction `0x3fb37f4492408cc9268445f6e0b283a8be266105ecdc876dc59f263ba50cb1b8`.
-- Current-address exact-text baseline and full revalidation: both `RELIABLE`, transaction hashes in `docs/VERIFICATION.md`.
-- Current-address live challenge: `UPHELD`; unavailable-source handling: `NEEDS_REVIEW`; hard-dependent propagation: `impact_5` complete, hashes in `docs/VERIFICATION.md`.
+- Historical `0x9aF3...` semantic baseline: `RELIABLE`, `FINALIZED` / `MAJORITY_AGREE`, transaction `0xd61a3efdde33e445da32becc2c792f4347079485b68a277b17b0b321185dad3d`.
+- Historical `0x9aF3...` semantic full revalidation: `RELIABLE`, `FINALIZED` / `MAJORITY_AGREE`, transaction `0x3fb37f4492408cc9268445f6e0b283a8be266105ecdc876dc59f263ba50cb1b8`.
+- Historical `0x9aF3...` exact-text baseline and full revalidation: both `RELIABLE`.
+- Current `0xC3c...` semantic baseline/revalidation, replay, and challenge are finalized; broader run stopped on RPC 502 before current-address unavailable-source and dependency-propagation proofs.
 
 ### Historical previous-address proofs
 
@@ -60,4 +60,4 @@
 
 ## Remaining release gate
 
-Current-source deployment and exact source parity are verified. Current-source Direct Mode, lint, and schema passed in the workspace and a clean clone. FINALIZED-aware exact-text and semantic integration proofs passed against the current address. Challenge-budget and semantic supplemental-evidence authority tradeoffs are described in `DECISION.md` and `docs/SECURITY.md`.
+The steward-fix deployment and exact source parity are verified; see the current deployment details in `docs/DEPLOYMENT.md` and adversarial proof in `docs/VERIFICATION.md`. Current-source Direct Mode (22), lint (3 checks), and schema (22 methods) passed in the workspace. The steward fix has adversarial test coverage and is deployed with exact source parity; current-address semantic integration proofs passed. Challenge-budget and semantic supplemental-evidence authority tradeoffs are described in `DECISION.md` and `docs/SECURITY.md`.

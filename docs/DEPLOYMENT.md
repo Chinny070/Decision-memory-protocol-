@@ -3,18 +3,17 @@
 ## Current deployment
 
 - Network: GenLayer Studionet, chain ID `61999`, RPC `https://studio.genlayer.com/api`.
-- Contract address: `0x9aF3aa61bEF38Abb597d7078F36659CBaFd65610`.
-- Deployment transaction: `0x20b1ff738043da829594a4e0f3f5311beafe5f4d06996ff4bb231891ef53206b`.
+- Contract address: `0xC3c63aB9459fd8BC87fa29161e2019F7d454B643`.
+- Deployment transaction: `0x509b1314e9d6e96792427b135ba3c0260dcf1af3fb8b05fb0f234cf8ca81ec56`.
 - Receipt: `FINALIZED`, `MAJORITY_AGREE`, leader execution `SUCCESS`, sender `0xaffE15eEc45b68835cc9E5B4Ab85dD5deaE8e70b`.
 - Deployed schema: 22 methods (14 views, 8 writes).
-- Retrieved-source normalized SHA-256: `a5fed29ee04bb9da09a188712108420ef03472fe3062b745c553b860470c2aa1`.
-- Local contract blob SHA-1: `c27f7ee4c97f8b9edc5ec42a7b9db772e5c6fe37`.
-- Source parity: verified; `genlayer code` output exactly matches the current `contracts/decision_memory.py` after removing CLI framing and normalizing line endings.
-- Source provenance: GitHub `main` commit `d5e2c75b7fdff60bbf078036ce48370e42acfa8b` contains the deployed contract blob `c27f7ee4c97f8b9edc5ec42a7b9db772e5c6fe37`. The local workspace checkout remains dirty because its `.git` directory is read-only.
-- Explorer address: https://explorer-studio.genlayer.com/address/0x9aF3aa61bEF38Abb597d7078F36659CBaFd65610.
-- Explorer transaction: https://explorer-studio.genlayer.com/tx/0x20b1ff738043da829594a4e0f3f5311beafe5f4d06996ff4bb231891ef53206b.
+- Retrieved-source normalized SHA-256: `eafa0b94585c0110889dd2cc3fdced1bc667853e74712eef6e4eef3933ffd699`.
+- GitHub source commit: `08addb48a6d554596fe9e5ef395e6ba1e5b3f7ff`; contract blob SHA-1 `ab348789bba2d2c5cd089c1774e6059942f5a55b`.
+- Source parity: verified against retrieved `genlayer code` output after removing CLI framing and normalizing line endings.
+- Explorer address: https://explorer-studio.genlayer.com/address/0xC3c63aB9459fd8BC87fa29161e2019F7d454B643.
+- Explorer transaction: https://explorer-studio.genlayer.com/tx/0x509b1314e9d6e96792427b135ba3c0260dcf1af3fb8b05fb0f234cf8ca81ec56.
 
-The contract was deployed with GenLayer CLI 0.39.1 against the official Studionet RPC. The deployment reached finalized majority consensus. Current-source exact-text lifecycle proofs, dependency propagation, and semantic baseline plus full revalidation have been run against this address. Their transaction hashes and statuses are recorded in `docs/VERIFICATION.md` and `SUBMISSION.md`. Later changes have been limited to tests and documentation, so they do not alter deployed-source parity or require redeployment.
+This deployment includes the semantic cross-field fail-closed fix requested by the steward. The new address's semantic baseline and full revalidation finalized with `MAJORITY_AGREE` and `RELIABLE`; their transaction hashes are recorded in `docs/VERIFICATION.md`. A broader current-address lifecycle run reached replay and challenge but receipt polling then received an RPC 502. The unavailable-source and dependency-propagation portions have not been verified on this address. The older `0x9aF3...` lifecycle records below are historical and must not be attributed to this deployment.
 
 ## Previous-source deployment
 

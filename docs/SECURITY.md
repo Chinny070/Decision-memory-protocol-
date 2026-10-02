@@ -66,3 +66,8 @@ A selective revalidation updates only checked assumption receipts. It does not r
 ## Operational limits
 
 The contract intentionally caps global decisions at 32 and selected histories. Once a global cap is reached, new objects fail closed. The protocol does not claim that an arbitrary URL is truthful or that validators can overcome unavailable, personalized, or adversarial sources. Evidence source selection and the frozen policy remain important to reviewers and downstream integrators.
+
+
+## Semantic finding cross-field safety
+
+Every validator finding must satisfy `_finding_fields_coherent` before acceptance. Inadequate evidence cannot support `SUPPORTED` or `WEAKENED`; `external_failure` requires `UNAVAILABLE` / `EXTERNAL_FAILURE`; and `critical_conflict` requires sufficient `CONTRADICTED` evidence with `CRITICAL_CHANGE`. Both report validation entry points enforce these relationships. The deterministic reducer independently treats incoherent findings as uncertain and fails closed to review, preventing `RELIABLE` even if malformed data reaches it. `test_report_validation_rejects_incoherent_evidence_safety_fields` exercises contradictory combinations through both paths.

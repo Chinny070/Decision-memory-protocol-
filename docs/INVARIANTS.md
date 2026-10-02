@@ -30,7 +30,7 @@ This matrix maps the required Decision Memory invariants to the implementation a
 - Challenges are permissionless; all callers share a first-come budget of three distinct attempts per decision. A distinct accepted report can consume a slot when its evidence is inconclusive. This is an intentional v1 tradeoff, not an access-control guarantee.
 - SEMANTIC challenge URLs and grounds are untrusted supplemental inputs; validators independently retrieve and judge them under the frozen assumption and policy. They do not modify the frozen source list or definition hash.
 
-The current deployment `0x9aF3aa61bEF38Abb597d7078F36659CBaFd65610` has finalized with majority agreement, its retrieved source matches the deployed contract by normalized SHA-256 `a5fed29ee04bb9da09a188712108420ef03472fe3062b745c553b860470c2aa1`, and exact-text plus semantic lifecycle proofs have finalized at this address. The previous address `0x81F5dE555814a8C48Da2FeC654Df40a616b64e71` is historical and does not contain the latest challenge fixes.
+The current deployment `0xC3c63aB9459fd8BC87fa29161e2019F7d454B643` finalized with majority agreement, and retrieved-source parity was verified at normalized SHA-256 `eafa0b94585c0110889dd2cc3fdced1bc667853e74712eef6e4eef3933ffd699`. The steward-requested semantic cross-field safety fix is deployed there. Current-address semantic baseline and full revalidation finalized successfully. Earlier `0x9aF3...` exact-text and dependency lifecycle proofs are historical and must not be attributed to this deployment.
 
 ## Known limitation
 

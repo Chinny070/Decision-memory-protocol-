@@ -17,17 +17,27 @@ The contract pins the official `py-genlayer` SDK through the dependency header. 
 | --- | --- | --- |
 | GenVM lint and SDK validation | `genvm-lint check contracts/decision_memory.py` | Passed: 3 checks on current source. |
 | ABI schema | `genvm-lint schema contracts/decision_memory.py` | Passed: 22 public methods (14 views, 8 writes); unchanged from previous source. |
-| Direct Mode | `python -m pytest -q -p no:cacheprovider tests/direct` | Passed: 21 tests on current source. |
+| Direct Mode | `python -m pytest -q -p no:cacheprovider tests/direct` | Passed: 22 tests on current source. |
 | Pickling | Direct Mode `VMContext.check_pickling = True` | Enabled in tests; result is part of final run. |
 | Previous-source exact-text lifecycle | Prior Studionet run; see `SUBMISSION.md` | Passed against `0x81F5...`; address does not contain current source changes. |
 | Previous-source semantic lifecycle | Prior Studionet run; see `SUBMISSION.md` | Passed against `0x81F5...`; address does not contain current source changes. |
 | Previous-source hosted lifecycle | Prior Studionet run; see `SUBMISSION.md` | Historical accepted proofs describe only the previous contract source. |
 | Previous-deployment semantic proof | Prior run, see `SUBMISSION.md` | Historical baseline reached `FINALIZED` / `MAJORITY_AGREE`, status `RELIABLE`; a separate prior revalidation attempt had no definitive receipt. Current-address successful semantic baseline and revalidation are recorded below. |
-| Current-source deployment parity | GenLayer CLI code retrieval, see `docs/DEPLOYMENT.md` | Verified exact normalized source match; SHA-256 `a5fed29ee04bb9da09a188712108420ef03472fe3062b745c553b860470c2aa1`. Deployment tx `0x20b1ff738043da829594a4e0f3f5311beafe5f4d06996ff4bb231891ef53206b` is `FINALIZED` / `MAJORITY_AGREE`. |
+| Historical deployment parity (`0x9aF3...`) | GenLayer CLI code retrieval | Verified at the time for the superseded deployment only; current steward-fix deployment parity is recorded below. |
 | Clean clone | GitHub commit `9d06206f62b4e89d0f8e2d0f5dbdf4962a0e2041`, cloned directly from `main` | `pip install --no-index -r requirements.txt` confirmed all pins were already installed; Direct Mode 21 passed, lint 3 checks passed, schema 22 methods passed. Dependencies used the shared installed Python environment, not an isolated virtual environment. |
-| Isolated dependency bootstrap | Fresh `.venv-verification` using `python -m pip install -r requirements.txt` | Pinned dependencies installed, including `genlayer-test==0.29.2`, `genlayer-py==0.16.3`, `genvm-linter==0.11.0`, and `pytest==8.4.2`. The wheel's Direct Mode loader needed a disposable local Windows temp-file cleanup compatibility patch; then 21 tests passed. Isolated lint passed 3 checks and schema remained 22 methods. |
-| Current-source Studionet lifecycle | Canonical address `0x9aF3aa61bEF38Abb597d7078F36659CBaFd65610`; `gltest tests/integration/test_studionet_lifecycle.py -v -s --network studionet` | Passed: 1 integration test, 10 lifecycle transactions `FINALIZED` / `MAJORITY_AGREE`; baseline and full revalidation `RELIABLE`, replay `WOULD_REQUIRE_REVIEW`, challenge `UPHELD`, unavailable evidence `NEEDS_REVIEW`, dependent status reviewable, bounded impact `impact_5` complete. Hashes below. |
-| Current-source semantic lifecycle | Same canonical address; `gltest tests/integration/test_studionet_semantic.py -v -s --network studionet` | Passed: baseline and full semantic revalidation both `FINALIZED` / `MAJORITY_AGREE`, and both reported `RELIABLE`. Baseline `0xd61a3efdde33e445da32becc2c792f4347079485b68a277b17b0b321185dad3d`; revalidation `0x3fb37f4492408cc9268445f6e0b283a8be266105ecdc876dc59f263ba50cb1b8`. One earlier revalidation transaction ended `CANCELED` / `NO_MAJORITY` and is not counted as success. |
+| Isolated dependency bootstrap | Fresh `.venv-verification` using `python -m pip install -r requirements.txt` | Pinned dependencies installed, including `genlayer-test==0.29.2`, `genlayer-py==0.16.3`, `genvm-linter==0.11.0`, and `pytest==8.4.2`. The wheel's Direct Mode loader needed a disposable local Windows temp-file cleanup compatibility patch; then 21 tests passed on the pre-steward-fix snapshot. Isolated lint passed 3 checks and schema remained 22 methods. |
+| Historical Studionet lifecycle (`0x9aF3...`) | Earlier `gltest` run | Passed at the time for the previous contract source. Do not attribute this lifecycle result to the current `0xC3c...` deployment. |
+| Historical semantic lifecycle (`0x9aF3...`) | Earlier `gltest` run | Historical proof for the superseded contract. Current steward-fix deployment semantic proofs are recorded in the section below. |
+
+## Steward-requested semantic safety fix (current source)
+
+- GitHub commit: `08addb48a6d554596fe9e5ef395e6ba1e5b3f7ff`; contract blob `ab348789bba2d2c5cd089c1774e6059942f5a55b`.
+- Studionet contract: [`0xC3c63aB9459fd8BC87fa29161e2019F7d454B643`](https://explorer-studio.genlayer.com/address/0xC3c63aB9459fd8BC87fa29161e2019F7d454B643), deployed by `0x509b1314e9d6e96792427b135ba3c0260dcf1af3fb8b05fb0f234cf8ca81ec56` (`FINALIZED` / `MAJORITY_AGREE`).
+- Deployed-source normalized SHA-256 parity: `eafa0b94585c0110889dd2cc3fdced1bc667853e74712eef6e4eef3933ffd699`.
+- Direct adversarial test: `test_report_validation_rejects_incoherent_evidence_safety_fields` rejects contradictory combinations through both `_valid_report` paths and confirms the reliable baseline remains unchanged. It covers insufficient evidence paired with `SUPPORTED/NO_MATERIAL_CHANGE`, external failure paired with supported findings, false unavailable typing, and unsupported critical conflict.
+- Current-source checks: 22 Direct Mode tests passed; GenVM lint passed 3 checks; ABI schema passed at 22 methods (14 view, 8 write).
+- Current-address semantic baseline `0xda093eb850af5749a1f7daacea71363da4beb4f26cdf7804f7aeb6c37d07bd66` and full revalidation `0x5e255e514f4acd1473b10437de5a959c19a2736fbe34f18ee69aae61efed01ba` both finalized with `MAJORITY_AGREE`; both reliance statuses were `RELIABLE`.
+- Broader current-address lifecycle attempt: registration `0x098aff02c9b44e0f30af89a90470b4e09255181a559cd51f790274c04055560a`, baseline `0x159ff207f1d3882c6a57ed36d904937a4c535bf9052524271c4db1bb83b8f22b`, revalidation `0x726eea5970fc293d90c22c09bb4b07de56271e207991ac8772d8ce31c0d44829`, replay `0x6725d35b168cf146d30a1bc82e06a5ae51c1c576773fb4f857421fcecf7d5660`, challenge `0x2744efafba49679ff344902b1c629d3e8c9d5ffd0572099f604ef5d70d8fea91`. These reached finalized consensus; the run then stopped when an RPC receipt read returned HTTP 502. Therefore this run does not prove unavailable-source or dependency propagation at this new address.
 
 ## Test scope
 
@@ -48,7 +58,7 @@ Direct Mode covers the protocol lifecycle and adversarial regressions for frozen
 
 The pinned `genlayer-test==0.29.2` and `genlayer-py==0.16.3` expose `transact(wait_transaction_status=TransactionStatus.FINALIZED, wait_interval=3000, wait_retries=50)`. The lifecycle helper requests FINALIZED explicitly with a bounded 150-second wait and requires `FINALIZED` plus `MAJORITY_AGREE` before dependent reads. Read-only RPC polling retries transient transport failures; transaction submissions are not retried. The successful run below used this helper against the current deployment. Earlier runs experienced transient RPC DNS/reset errors and are not counted as successful runs.
 
-## Current-source Studionet lifecycle
+## Historical Studionet lifecycle on superseded `0x9aF3...` deployment
 
 Network: GenLayer Studionet (`https://studio.genlayer.com/api`). Canonical contract: [`0x9aF3aa61bEF38Abb597d7078F36659CBaFd65610`](https://explorer-studio.genlayer.com/address/0x9aF3aa61bEF38Abb597d7078F36659CBaFd65610). Deployment transaction: `0x20b1ff738043da829594a4e0f3f5311beafe5f4d06996ff4bb231891ef53206b`.
 

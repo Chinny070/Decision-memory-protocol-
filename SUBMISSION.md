@@ -4,9 +4,17 @@
 
 ## Current source security update
 
-The current repository source includes targeted fixes for EXACT_TEXT challenge evidence authority and unavailable selected-source handling, along with predecessor successor-slot authorization, evidence render/content hash validator binding, replay exact-enum consensus, and duplicate challenge quota exhaustion. Current source has 21 Direct Mode passes, 3 GenVM lint checks, and a 22-method schema. Its Studionet deployment, retrieved-source parity, and full application lifecycle are verified below and in `docs/VERIFICATION.md`.
+The steward-requested fix makes semantic findings fail closed when safety fields conflict. Both report validation entry points enforce coherent combinations; the deterministic reducer independently fails closed on incoherent findings. The adversarial Direct Mode test rejects contradictory combinations including insufficient evidence paired with `SUPPORTED` / `NO_MATERIAL_CHANGE` and `external_failure=true` paired with a supported result.
 
-**Current deployment:** `0x9aF3aa61bEF38Abb597d7078F36659CBaFd65610`, transaction `0x20b1ff738043da829594a4e0f3f5311beafe5f4d06996ff4bb231891ef53206b`, `FINALIZED` / `MAJORITY_AGREE`. Retrieved-source parity with the contract file is verified (SHA-256 `a5fed29ee04bb9da09a188712108420ef03472fe3062b745c553b860470c2aa1`; blob `c27f7ee4c97f8b9edc5ec42a7b9db772e5c6fe37`). The source is committed to GitHub `main` at `d5e2c75b7fdff60bbf078036ce48370e42acfa8b`; the local workspace checkout remains dirty because its `.git` is read-only.
+Current source: 22 Direct Mode tests passed, 3 GenVM lint checks passed, 22-method schema validated. GitHub `main` commit `08addb48a6d554596fe9e5ef395e6ba1e5b3f7ff` contains the contract fix and adversarial test; contract blob `ab348789bba2d2c5cd089c1774e6059942f5a55b`.
+
+**Current deployment:** [`0xC3c63aB9459fd8BC87fa29161e2019F7d454B643`](https://explorer-studio.genlayer.com/address/0xC3c63aB9459fd8BC87fa29161e2019F7d454B643), transaction `0x509b1314e9d6e96792427b135ba3c0260dcf1af3fb8b05fb0f234cf8ca81ec56`, `FINALIZED` / `MAJORITY_AGREE`. Retrieved-source parity verified at normalized SHA-256 `eafa0b94585c0110889dd2cc3fdced1bc667853e74712eef6e4eef3933ffd699`.
+
+## Current deployment semantic proof
+
+- Semantic baseline `0xda093eb850af5749a1f7daacea71363da4beb4f26cdf7804f7aeb6c37d07bd66`: `FINALIZED` / `MAJORITY_AGREE`, `RELIABLE`.
+- Full semantic revalidation `0x5e255e514f4acd1473b10437de5a959c19a2736fbe34f18ee69aae61efed01ba`: `FINALIZED` / `MAJORITY_AGREE`, `RELIABLE`.
+- A broader lifecycle run on this deployment finalized registration, baseline, revalidation, replay (`WOULD_REQUIRE_REVIEW`), and challenge (`UPHELD`), then receipt polling received RPC HTTP 502. The remaining unavailable-source and dependency-propagation checks are not claimed as passed. Transaction detail is in `docs/VERIFICATION.md`.
 
 ## Previous deployment details
 
@@ -20,10 +28,10 @@ The current repository source includes targeted fixes for EXACT_TEXT challenge e
 
 | Gate | Status | Evidence |
 | --- | --- | --- |
-| Contract / runtime | Green for local verification | Current source: 21 Direct Mode tests, 3 GenVM lint checks, and 22-method schema pass. GitHub clean-clone verification is recorded in `docs/VERIFICATION.md`. |
-| Real consensus | Green for exercised lifecycle | Current-source deployment and all 10 lifecycle transactions finalized with `MAJORITY_AGREE`; receipts and hashes are recorded below. |
-| Real evidence | Green for exact-text and semantic proofs | Current deployment used browser-rendered official documentation. Exact-text baseline/revalidation were `RELIABLE` and challenge was `UPHELD`; semantic baseline and full revalidation were both `RELIABLE` after finalized majority consensus. |
-| Steward fit | Green for exercised dependency proof | Unavailable evidence remained `NEEDS_REVIEW`, a hard-dependent decision remained reviewable, and bounded propagation completed `impact_5`. The rejection-oriented audit and DM1â€“DM15 map are documented below. |
+| Contract / runtime | Green for local verification | Current source: 22 Direct Mode tests, 3 GenVM lint checks, and 22-method schema pass. GitHub clean-clone verification is recorded in `docs/VERIFICATION.md`. |
+| Real consensus | Green for deployment and semantic proof; broader lifecycle partial | Deployment plus semantic baseline/revalidation finalized with majority agreement. The latest broad run stopped on receipt polling HTTP 502 before unavailable-source and dependency proofs on this address.
+| Real evidence | Green for exact-text and semantic proofs | On the current deployment, semantic baseline and full revalidation both finalized with `MAJORITY_AGREE` and reported `RELIABLE`. Earlier exact-text and dependency lifecycle evidence is from the superseded `0x9aF3...` address and is historical. |
+| Steward-requested semantic safety fix | Green | Cross-field report validation, reducer defense-in-depth, contradictory-field adversarial test, current GitHub source, and deployed source parity are recorded above and in `docs/VERIFICATION.md`. |
 
 ## Submission copy (current gate evidence recorded above)
 
@@ -31,21 +39,21 @@ The current repository source includes targeted fixes for EXACT_TEXT challenge e
 - **Title:** Decision Memory Protocol â€” immutable decision context, semantic revalidation, counterfactual replay, and dependency-aware reliance.
 - **One-line thesis:** Preserves why a decision was defensible, revalidates its assumptions against evidence, and deterministically propagates reliance changes without rewriting history.
 - **Repository:** https://github.com/Chinny070/Decision-memory-protocol-
-- **Current Studionet address:** [0x9aF3aa61bEF38Abb597d7078F36659CBaFd65610](https://explorer-studio.genlayer.com/address/0x9aF3aa61bEF38Abb597d7078F36659CBaFd65610).
-- **Deployment transaction:** `0x20b1ff738043da829594a4e0f3f5311beafe5f4d06996ff4bb231891ef53206b`, `FINALIZED`, `MAJORITY_AGREE`.
-- **Deployment source:** GitHub `main` commit `d5e2c75b7fdff60bbf078036ce48370e42acfa8b`; normalized parity hash `a5fed29ee04bb9da09a188712108420ef03472fe3062b745c553b860470c2aa1`.
+- **Current Studionet address:** [0xC3c63aB9459fd8BC87fa29161e2019F7d454B643](https://explorer-studio.genlayer.com/address/0xC3c63aB9459fd8BC87fa29161e2019F7d454B643).
+- **Deployment transaction:** `0x509b1314e9d6e96792427b135ba3c0260dcf1af3fb8b05fb0f234cf8ca81ec56`, `FINALIZED`, `MAJORITY_AGREE`.
+- **Deployment source:** GitHub `main` commit `08addb48a6d554596fe9e5ef395e6ba1e5b3f7ff`; normalized parity hash `eafa0b94585c0110889dd2cc3fdced1bc667853e74712eef6e4eef3933ffd699`.
 - **Why GenLayer:** Validators independently retrieve and interpret external evidence; one creator, API, or model must not author reliance alone.
 - **Consensus mechanism:** Custom leader/validator nondeterministic evaluation with typed substantive equivalence; deterministic code derives reliance and graph effects.
 - **Failure policy:** Insufficient evidence, source failure, or consensus disagreement never creates affirmative reliance; transaction-level disagreement is not an application status.
 - **Reuse surface:** `get_reliance_certificate`, `get_reliance_status`, `is_reliable`, plus bounded lifecycle writes.
-- **Verified local checks:** Current source: 21 Direct Mode tests passed, 3 GenVM lint checks passed, and 22-method schema passed. Clean clone of GitHub commit `9d06206f62b4e89d0f8e2d0f5dbdf4962a0e2041` also passed all three checks after dependency pins resolved from the installed Python environment.
-- **Verified live checks:** Current deployment receipt, schema, exact source parity, and the full current-address lifecycle are verified. All transaction hashes and statuses are in `docs/VERIFICATION.md`.
+- **Verified local checks:** Current source: 22 Direct Mode tests passed, 3 GenVM lint checks passed, and 22-method schema passed. Clean clone of GitHub commit `9d06206f62b4e89d0f8e2d0f5dbdf4962a0e2041` also passed all three checks after dependency pins resolved from the installed Python environment.
+- **Verified live checks:** Current deployment receipt, schema, source parity, adversarial safety test, and semantic baseline/revalidation are verified. The new-address broad lifecycle run stopped on an RPC 502 during receipt polling; unavailable-source and dependency-propagation proofs on the new address remain unverified.
 - **Reviewer fast path:** `README.md`, `DECISION.md`, `docs/ARCHITECTURE.md`, `docs/INVARIANTS.md`, `docs/CONSENSUS.md`, and `docs/RELEASE_CANDIDATE_VERIFICATION.md`.
-- **Portal description:** Decision Memory Protocol is a reusable GenLayer Intelligent Contract that preserves decision context and critical assumptions, revalidates them against independently retrieved evidence, and gives downstream contracts a machine-readable reliance certificate. Validators independently assess external evidence; deterministic contract logic derives reliance state, lease freshness, successor lineage, and bounded dependency impact. It includes immutable counterfactual replay and fail-closed evidence handling. Current-source Direct Mode, GenVM validation, deployed-source parity, and the full live lifecycle proof pass. The lifecycle evidence below applies to the canonical current deployment.
+- **Portal description:** Decision Memory Protocol is a reusable GenLayer Intelligent Contract that preserves decision context and critical assumptions, revalidates them against independently retrieved evidence, and gives downstream contracts a machine-readable reliance certificate. Validators independently assess external evidence; deterministic contract logic derives reliance state, lease freshness, successor lineage, and bounded dependency impact. It includes immutable counterfactual replay and fail-closed evidence handling. Current-source Direct Mode, GenVM validation, deployed-source parity, and semantic baseline/revalidation pass. Earlier full lifecycle rows below are historical evidence for the superseded `0x9aF3...` deployment.
 
-## Current-source Studionet lifecycle evidence
+## Historical lifecycle evidence for superseded `0x9aF3...` deployment
 
-All transactions below ran against current-source address [`0x9aF3aa61bEF38Abb597d7078F36659CBaFd65610`](https://explorer-studio.genlayer.com/address/0x9aF3aa61bEF38Abb597d7078F36659CBaFd65610). Each write finalized with `MAJORITY_AGREE`.
+These transactions ran against the previous `0x9aF3...` deployment before the steward-requested semantic cross-field fix. They are historical evidence and do not prove the new deployment’s unavailable-source or dependency-propagation behavior.
 
 | Proof | Transaction | Verified result |
 | --- | --- | --- |
@@ -62,9 +70,9 @@ All transactions below ran against current-source address [`0x9aF3aa61bEF38Abb59
 
 The lifecycle test passed (`1 passed`) in 484.53 seconds. A pytest cache permission warning did not affect the result.
 
-## Current-source semantic Studionet proof
+## Historical semantic Studionet proof for superseded `0x9aF3...` deployment
 
-Run against the same canonical contract address. Both successful transactions reached `FINALIZED` / `MAJORITY_AGREE`; both the baseline and full semantic revalidation reported `RELIABLE`.
+Historical proof on the superseded address; the current deployment’s successful semantic proof is listed in the current-source update above and in `docs/VERIFICATION.md`.
 
 | Proof | Transaction | Verified result |
 | --- | --- | --- |
