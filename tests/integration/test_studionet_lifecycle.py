@@ -3,9 +3,11 @@
 import json
 import os
 import subprocess
+import time
 from pathlib import Path
 
 import pytest
+import requests
 from gltest import get_contract_factory
 from gltest.assertions import tx_execution_succeeded
 from genlayer_py.types import TransactionStatus
@@ -14,6 +16,27 @@ from genlayer_py.types import TransactionStatus
 ROOT = Path(__file__).resolve().parents[2]
 CONTRACT_PATH = ROOT / "contracts" / "decision_memory.py"
 DOCS_URL = "https://docs.genlayer.com/developers/intelligent-contracts/features/non-determinism"
+
+
+# Hosted RPC occasionally resets receipt and view polls. Retry reads only;
+# transaction submissions must never be replayed by this transport shim.
+_requests_post = requests.post
+
+
+def _retry_rpc_reads(*args, **kwargs):
+    method = (kwargs.get("json") or {}).get("method", "")
+    if method not in {"eth_getTransactionByHash", "eth_call", "gl_getTransactionReceipt"}:
+        return _requests_post(*args, **kwargs)
+    for attempt in range(8):
+        try:
+            return _requests_post(*args, **kwargs)
+        except requests.exceptions.RequestException:
+            if attempt == 7:
+                raise
+            time.sleep(min(2 + attempt, 8))
+
+
+requests.post = _retry_rpc_reads
 
 
 def _assumption(source_url=DOCS_URL, assumption_id="official-docs"):
@@ -88,7 +111,7 @@ def test_live_studionet_reliance_replay_failure_and_dependency_proof():
 
     challenge_tx = _transact(
         contract, "challenge_revalidation", decision_id, "official-docs", "NEW_EVIDENCE",
-        "https://docs.genlayer.com/developers/intelligent-contracts/first-intelligent-contract",
+        DOCS_URL,
         "Non-determinism in Intelligent Contracts",
     )
     challenge = contract.get_latest_challenge(args=[decision_id]).call()
