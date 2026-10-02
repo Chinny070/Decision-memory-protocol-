@@ -17,7 +17,8 @@
 - Deploy transaction: `0x20b1ff738043da829594a4e0f3f5311beafe5f4d06996ff4bb231891ef53206b`, `FINALIZED` / `MAJORITY_AGREE`.
 - Schema: 22 methods (14 views, 8 writes).
 - Retrieved source exact match: normalized SHA-256 `a5fed29ee04bb9da09a188712108420ef03472fe3062b745c553b860470c2aa1`; local blob `c27f7ee4c97f8b9edc5ec42a7b9db772e5c6fe37`.
-- Current-address application lifecycle proofs have not yet been run.
+- Current-source exact-text lifecycle and bounded dependency propagation are finalized at the current address; see `docs/VERIFICATION.md` and `SUBMISSION.md` for each transaction hash and typed result.
+- Current-source semantic-mode baseline and full revalidation both finalized with `MAJORITY_AGREE` and `RELIABLE`; see the semantic proof table below.
 - Contract source matches blob `c27f7ee4c97f8b9edc5ec42a7b9db772e5c6fe37` in GitHub `main` commit `d5e2c75b7fdff60bbf078036ce48370e42acfa8b`. The local workspace checkout remains dirty because its `.git` is read-only.
 
 ## Previous deployment (earlier security-fix source)
@@ -41,15 +42,22 @@
 
 ## Live proofs
 
-- Canonical exact-text baseline and full revalidation: `RELIABLE`.
-- Canonical counterfactual replay: `WOULD_REQUIRE_REVIEW`; original certificate unchanged.
-- Canonical evidence-backed challenge: `OVERTURNED`.
-- Canonical unavailable-source baseline: `NEEDS_REVIEW`, not invalidated.
-- Canonical hard-dependent baseline: `NEEDS_REVIEW`; propagation event `impact_4` complete, transaction `0xa6bc9ffb153cf8e82fa449c0a0a9d72b7b7dff68919f4300631ddfad56a94376` `FINALIZED` / `MAJORITY_AGREE`.
-- Focused semantic baseline: `RELIABLE`, `FINALIZED` / `MAJORITY_AGREE`.
-- Semantic revalidation attempt: no definitive receipt; the RPC disconnected while polling.
+- Current-address semantic baseline: `RELIABLE`, `FINALIZED` / `MAJORITY_AGREE`, transaction `0xd61a3efdde33e445da32becc2c792f4347079485b68a277b17b0b321185dad3d`.
+- Current-address semantic full revalidation: `RELIABLE`, `FINALIZED` / `MAJORITY_AGREE`, transaction `0x3fb37f4492408cc9268445f6e0b283a8be266105ecdc876dc59f263ba50cb1b8`.
+- Current-address exact-text baseline and full revalidation: both `RELIABLE`, transaction hashes in `docs/VERIFICATION.md`.
+- Current-address live challenge: `UPHELD`; unavailable-source handling: `NEEDS_REVIEW`; hard-dependent propagation: `impact_5` complete, hashes in `docs/VERIFICATION.md`.
+
+### Historical previous-address proofs
+
+- Previous-address exact-text baseline and full revalidation: `RELIABLE`.
+- Previous-address counterfactual replay: `WOULD_REQUIRE_REVIEW`; original certificate unchanged.
+- Previous-address evidence-backed challenge: `OVERTURNED`.
+- Previous-address unavailable-source baseline: `NEEDS_REVIEW`, not invalidated.
+- Previous-address hard-dependent baseline: `NEEDS_REVIEW`; propagation event `impact_4` complete, transaction `0xa6bc9ffb153cf8e82fa449c0a0a9d72b7b7dff68919f4300631ddfad56a94376` `FINALIZED` / `MAJORITY_AGREE`.
+- Previous-address focused semantic baseline: `RELIABLE`, `FINALIZED` / `MAJORITY_AGREE`.
+- Historical previous-address semantic revalidation attempt: no definitive receipt; the RPC disconnected while polling. A later previous-address proof and current-address semantic proof are recorded elsewhere in this document and `SUBMISSION.md`.
 - An earlier broad semantic baseline reached `UNDETERMINED` / `NO_MAJORITY`.
 
 ## Remaining release gate
 
-Current-source deployment and exact source parity are verified. Current-source Direct Mode, lint, and schema passed both in the workspace and in a clean temporary clone of the candidate tree. The FINALIZED-aware integration helper and application lifecycle have not yet been exercised against the new address. `SUBMISSION.md` holds previous-address transaction records and labels them as historical.
+Current-source deployment and exact source parity are verified. Current-source Direct Mode, lint, and schema passed in the workspace and a clean clone. FINALIZED-aware exact-text and semantic integration proofs passed against the current address. Challenge-budget and semantic supplemental-evidence authority tradeoffs are described in `DECISION.md` and `docs/SECURITY.md`.

@@ -43,6 +43,12 @@ The model emits only typed assumption findings and bounded diagnostics. It never
 
 The thresholds are deterministic and versioned with the source. A complete revalidation renews the lease; a selective one records per-assumption freshness and never claims a whole-decision refresh.
 
+## Challenges and supplemental evidence
+
+Challenges are permissionless in v1. All callers share a first-come budget of three distinct challenge attempts per decision. Exact duplicate identities are rejected before consensus without consuming a slot. A distinct attempt consumes a slot once a valid consensus report is accepted, including an inconclusive or unavailable-evidence result. This is an intentional bounded-resource tradeoff: an early caller can exhaust the budget before a later challenger arrives. V1 has no stake or authorization gate; the bounded challenge budget and duplicate rejection are the spam controls.
+
+For `EXACT_TEXT`, a challenge must select a frozen registered source and uses its registered retrieval kind and marker. For `SEMANTIC`, a challenger may provide one supplemental HTTPS source. The source and caller's factual ground are untrusted inputs: validators independently retrieve the source and judge its relevance and weight under the frozen assumption and policy. Supplemental evidence affects that challenge finding only; it does not change the capsule's frozen source bindings or definition hash. Integrators that require source authority to be fixed should use `EXACT_TEXT` or avoid treating a semantic challenge as authoritative without reviewing its evidence receipts.
+
 ## Counterfactual replay
 
 Historical replay uses only the frozen baseline snapshot, original payload, and new bounded policy. It creates an immutable receipt containing original and counterfactual policy hashes, baseline hash, typed replay output, and consensus digest. Replay does not fetch current web pages or alter current reliance state. A caller can separately create a successor if a new decision is required.

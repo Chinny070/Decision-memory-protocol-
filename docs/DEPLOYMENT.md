@@ -14,7 +14,7 @@
 - Explorer address: https://explorer-studio.genlayer.com/address/0x9aF3aa61bEF38Abb597d7078F36659CBaFd65610.
 - Explorer transaction: https://explorer-studio.genlayer.com/tx/0x20b1ff738043da829594a4e0f3f5311beafe5f4d06996ff4bb231891ef53206b.
 
-The contract was deployed with GenLayer CLI 0.39.1 against the official Studionet RPC. The deployment reached finalized majority consensus. Application lifecycle proofs have not yet been run against this address.
+The contract was deployed with GenLayer CLI 0.39.1 against the official Studionet RPC. The deployment reached finalized majority consensus. Current-source exact-text lifecycle proofs, dependency propagation, and semantic baseline plus full revalidation have been run against this address. Their transaction hashes and statuses are recorded in `docs/VERIFICATION.md` and `SUBMISSION.md`. Later changes have been limited to tests and documentation, so they do not alter deployed-source parity or require redeployment.
 
 ## Previous-source deployment
 

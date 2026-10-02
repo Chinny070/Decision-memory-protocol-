@@ -24,6 +24,8 @@ Callers can submit arbitrary definitions and can challenge observations. Source 
 | Unavailable challenged EXACT_TEXT source appears contradicted because another source is available | Availability is scoped to the selected frozen source; unavailable means `UNAVAILABLE` / `EXTERNAL_FAILURE`, never contradiction. |
 | Successor slot hijack | Lowest-level `register_decision` check requires sender to equal predecessor creator before predecessor mutation. |
 | Duplicate challenge burns quota | Canonical identity over immutable challenge inputs is checked before consensus and count increment; identity storage is bounded by the existing global challenge cap. |
+| Permissionless callers exhaust challenge quota | This is an explicit v1 tradeoff: all callers share a first-come budget of three distinct attempts per decision, including valid inconclusive attempts. Exact duplicates do not count. V1 has no challenger authorization or stake gate; integrators accept this bounded denial-of-service surface or should avoid relying on a decision whose challenge budget is essential. |
+| Semantic challenger supplies biased supplemental evidence | SEMANTIC challenge URLs and factual grounds are untrusted. Validators independently retrieve the supplemental URL and judge it under the frozen assumption and policy; it does not alter frozen source bindings or definition hash. EXACT_TEXT challenges are constrained to registered source authority. |
 | Replay typed-result equivocation | Validators must agree on the exact enum persisted and exposed; only explanatory digest text is excluded. |
 | Stale evidence or partial refresh | Per-assumption receipts and `PARTIAL` scope; partial work does not renew the full lease. |
 | Temporary network failure | Becomes `UNAVAILABLE` / `EXTERNAL_FAILURE` and review, not contradiction or invalidation. |
@@ -45,6 +47,7 @@ Reentrancy and message ordering are not applicable to this v1 interface: it has 
 
 - HTTPS-only source URLs; bounded text, sources, assumptions, dependencies, histories, replays, and challenge rounds.
 - EXACT_TEXT challenges cannot add a source authority; they recheck one frozen registered source with its original retrieval kind and marker.
+- SEMANTIC challenges may add one supplemental HTTPS source. Its authority is validator/policy judged, not frozen-source authority; the source is recorded in the challenge evidence receipts and does not rewrite the capsule.
 - Assumption DAG cycles are impossible in v1 because assumptions cannot depend on one another.
 - Decision dependency cycles are prevented by allowing edges only to existing decisions.
 - Fanout, queue size, propagation work, and total capsule count are capped.
@@ -52,6 +55,7 @@ Reentrancy and message ordering are not applicable to this v1 interface: it has 
 - Creator-supplied status, model-supplied reliance, model arithmetic, and model-supplied graph actions are not accepted.
 - Only the predecessor creator may create its one successor; `register_decision` enforces this even when called directly.
 - Exact duplicate challenge attempts do not consume challenge capacity; materially different ground, URL, reason, or assumption can be a separate challenge.
+- The three-challenge budget is permissionless and shared across callers. A distinct valid attempt can consume a slot even when its result is inconclusive; this is intentional for v1 and is a documented denial-of-service limit, not a caller-specific quota.
 - A hard dependency on an invalidated/blocked upstream becomes `BLOCKED`; uncertain upstream evidence leads to `NEEDS_REVIEW`.
 - External failure does not automatically invalidate a decision.
 

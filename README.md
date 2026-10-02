@@ -36,7 +36,7 @@ The certificate carries definition and policy hashes, assumption and dependency 
 
 External failure is not semantic contradiction. Insufficient or unavailable evidence cannot establish `RELIABLE`. A critical contradiction or critical materiality finding deterministically invalidates the capsule. Downstream effects are computed by contract code, not by the model.
 
-EXACT_TEXT criteria are frozen at registration. Challenges can add a source but cannot replace the original `match_text`; ambiguous markers across sources are rejected. Only the predecessor creator may create its single successor. Duplicate challenges are rejected before consensus without consuming quota. Validators bind evidence reports to independently recomputed render/content hashes, and replay validators agree on the exact typed result stored by the contract.
+EXACT_TEXT criteria and source authority are frozen at registration. EXACT_TEXT challenges can select only a registered source and retain its retrieval kind and marker. SEMANTIC challenges may submit one supplemental HTTPS source; validators independently retrieve and assess it under the frozen assumption and policy, while treating the caller's factual ground and page contents as untrusted. This supplemental source does not rewrite the registered source list. Only the predecessor creator may create its single successor. Challenges are permissionless and share a first-come budget of three distinct attempts per decision; exact duplicates do not consume a slot, but a distinct attempt can consume one even when evidence is inconclusive. This bounded tradeoff is intentional in v1. Validators bind evidence reports to independently recomputed render/content hashes, and replay validators agree on the exact typed result stored by the contract.
 
 ## Bounds
 
@@ -48,7 +48,7 @@ EXACT_TEXT criteria are frozen at registration. Challenges can add a source but 
 | Dependencies per decision | 8 |
 | Direct fanout per decision | 16 |
 | Revalidations per decision | 32 |
-| Challenges per decision | 3 |
+| Permissionless challenge attempts per decision | 3 distinct attempts; shared first-come budget |
 | Replays | 32 |
 | Propagation queue | 32 decisions |
 | Propagation work per call | 8 decisions |
@@ -80,4 +80,4 @@ All three use the same certificate and safety gate; no domain-specific contract 
 
 ## Current verification state
 
-The current source passes 21 Direct Mode tests, 3 GenVM lint checks, and its schema has 22 methods. It is deployed on Studionet at [0x9aF3aa61bEF38Abb597d7078F36659CBaFd65610](https://explorer-studio.genlayer.com/address/0x9aF3aa61bEF38Abb597d7078F36659CBaFd65610); the deployment is finalized and retrieved-source parity is verified. Application lifecycle proofs against this address remain to be run. See [SUBMISSION.md](SUBMISSION.md), [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md), and [docs/VERIFICATION.md](docs/VERIFICATION.md) for evidence and limits.
+The current source passes 21 Direct Mode tests, 3 GenVM lint checks, and its schema has 22 methods. It is deployed on Studionet at [0x9aF3aa61bEF38Abb597d7078F36659CBaFd65610](https://explorer-studio.genlayer.com/address/0x9aF3aa61bEF38Abb597d7078F36659CBaFd65610); the deployment is finalized and retrieved-source parity is verified. Current-address exact-text and semantic lifecycle proofs reached finalized consensus; exact-text and semantic baselines and full revalidations reported `RELIABLE`. See [SUBMISSION.md](SUBMISSION.md), [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md), and [docs/VERIFICATION.md](docs/VERIFICATION.md) for transaction evidence and limits.

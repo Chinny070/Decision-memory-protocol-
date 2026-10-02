@@ -22,10 +22,10 @@ The current repository source includes targeted fixes for EXACT_TEXT challenge e
 | --- | --- | --- |
 | Contract / runtime | Green for local verification | Current source: 21 Direct Mode tests, 3 GenVM lint checks, and 22-method schema pass. GitHub clean-clone verification is recorded in `docs/VERIFICATION.md`. |
 | Real consensus | Green for exercised lifecycle | Current-source deployment and all 10 lifecycle transactions finalized with `MAJORITY_AGREE`; receipts and hashes are recorded below. |
-| Real evidence | Green for exact-text lifecycle | Current deployment used real browser-rendered official documentation for baseline, full revalidation, and challenge. Baseline and revalidation were `RELIABLE`; challenge was `UPHELD`. |
+| Real evidence | Green for exact-text and semantic proofs | Current deployment used browser-rendered official documentation. Exact-text baseline/revalidation were `RELIABLE` and challenge was `UPHELD`; semantic baseline and full revalidation were both `RELIABLE` after finalized majority consensus. |
 | Steward fit | Green for exercised dependency proof | Unavailable evidence remained `NEEDS_REVIEW`, a hard-dependent decision remained reviewable, and bounded propagation completed `impact_5`. The rejection-oriented audit and DM1â€“DM15 map are documented below. |
 
-## Submission copy (not final until all gates clear)
+## Submission copy (current gate evidence recorded above)
 
 - **Category:** Standalone reusable GenLayer Intelligent Contract.
 - **Title:** Decision Memory Protocol â€” immutable decision context, semantic revalidation, counterfactual replay, and dependency-aware reliance.
@@ -61,6 +61,21 @@ All transactions below ran against current-source address [`0x9aF3aa61bEF38Abb59
 | Bounded propagation | `0x43304ae53af6c1760719d01330a2850ca2dd9cff8b156dc83e8f2a5de72d415f` | `impact_5` complete |
 
 The lifecycle test passed (`1 passed`) in 484.53 seconds. A pytest cache permission warning did not affect the result.
+
+## Current-source semantic Studionet proof
+
+Run against the same canonical contract address. Both successful transactions reached `FINALIZED` / `MAJORITY_AGREE`; both the baseline and full semantic revalidation reported `RELIABLE`.
+
+| Proof | Transaction | Verified result |
+| --- | --- | --- |
+| Semantic baseline | `0xd61a3efdde33e445da32becc2c792f4347079485b68a277b17b0b321185dad3d` | `FINALIZED` / `MAJORITY_AGREE`; `RELIABLE` |
+| Full semantic revalidation | `0x3fb37f4492408cc9268445f6e0b283a8be266105ecdc876dc59f263ba50cb1b8` | `FINALIZED` / `MAJORITY_AGREE`; `RELIABLE` |
+
+One earlier semantic revalidation attempt, `0x35408d2d99c5e448d5057840cb7ecb2a8a77fe294321c91ea8b21c79fb8f2486`, ended `CANCELED` / `NO_MAJORITY` and is excluded from the successful proof. The passing integration run completed in 229.91 seconds. The bounded retry helper retries only a definitive canceled/no-majority transaction.
+
+## V1 challenge and supplemental-evidence policy
+
+Challenges are intentionally permissionless in v1, with a shared first-come cap of three distinct attempts per decision. Exact duplicates do not consume capacity; a distinct valid attempt can consume capacity even if evidence is inconclusive. This bounded denial-of-service surface is an explicit tradeoff; v1 does not add caller authorization, stake, or escrow. For SEMANTIC challenges, supplemental HTTPS evidence is independently fetched and judged by validators under the frozen assumption and policy. It does not change the frozen source bindings or definition hash. See `DECISION.md` and `docs/SECURITY.md`.
 
 ## Previous-address Studionet lifecycle evidence
 
@@ -114,7 +129,7 @@ The successful pre-fix lifecycle used decision prefix `live-docs-10892` on the p
 | Dependent baseline | `0xf20237d48ecab71bb438993be2c6c27dde0d35930f16a483414a602475887465` | `ACCEPTED` / `MAJORITY_AGREE`; dependent status `NEEDS_REVIEW` |
 | Bounded dependency propagation | `0xa6bc9ffb153cf8e82fa449c0a0a9d72b7b7dff68919f4300631ddfad56a94376` | `FINALIZED` / `MAJORITY_AGREE`; event `impact_4` complete |
 
-On the previous deployment, the initial test process lost RPC connectivity while polling dependent registration; its receipt was reconciled and a resume test verified propagation. No application lifecycle has yet been run at the current address. An earlier challenge transaction `0x97a00d95b19bc35c693e0047ee8befb541fb41fc270745ae829d0d0a875237f4` was `CANCELED` before validator rounds and is not counted as success.
+On the previous deployment, the initial test process lost RPC connectivity while polling dependent registration; its receipt was reconciled and a resume test verified propagation. An earlier challenge transaction `0x97a00d95b19bc35c693e0047ee8befb541fb41fc270745ae829d0d0a875237f4` was `CANCELED` before validator rounds and is not counted as success.
 
 ## Previous-source semantic-mode live proof
 
@@ -138,4 +153,4 @@ On the previous deployment, the initial test process lost RPC connectivity while
 
 ## Remaining gate
 
-The previous deployment’s semantic revalidation transaction listed above reached `RELIABLE`; an earlier first attempt on the earlier contract did not produce a definitive receipt. No application lifecycle proof exists for the current deployment. The clean candidate-clone check applies to the current contract and tests, but the workspace has no Git commit for those changes. Do not mark all four gates green or call the project finalized until remaining gates pass.
+Current-source exact-text lifecycle, dependency propagation, semantic baseline, and full semantic revalidation proofs are recorded above. Current contract source is unchanged by the FINALIZED helper and documentation updates, so the existing deployment remains canonical and does not need redeployment. The clean-clone row records its historical snapshot; the isolated dependency-bootstrap results for this verification are listed in `docs/VERIFICATION.md`.

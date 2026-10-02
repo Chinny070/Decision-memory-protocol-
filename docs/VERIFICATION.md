@@ -17,15 +17,17 @@ The contract pins the official `py-genlayer` SDK through the dependency header. 
 | --- | --- | --- |
 | GenVM lint and SDK validation | `genvm-lint check contracts/decision_memory.py` | Passed: 3 checks on current source. |
 | ABI schema | `genvm-lint schema contracts/decision_memory.py` | Passed: 22 public methods (14 views, 8 writes); unchanged from previous source. |
-| Direct Mode | `python -m pytest -q -p no:cacheprovider tests/direct` | Passed: 20 tests on current source. |
+| Direct Mode | `python -m pytest -q -p no:cacheprovider tests/direct` | Passed: 21 tests on current source. |
 | Pickling | Direct Mode `VMContext.check_pickling = True` | Enabled in tests; result is part of final run. |
 | Previous-source exact-text lifecycle | Prior Studionet run; see `SUBMISSION.md` | Passed against `0x81F5...`; address does not contain current source changes. |
 | Previous-source semantic lifecycle | Prior Studionet run; see `SUBMISSION.md` | Passed against `0x81F5...`; address does not contain current source changes. |
 | Previous-source hosted lifecycle | Prior Studionet run; see `SUBMISSION.md` | Historical accepted proofs describe only the previous contract source. |
-| Semantic live baseline | Prior run, see `SUBMISSION.md` | Focused claim reached `FINALIZED` / `MAJORITY_AGREE`, status `RELIABLE`. Following revalidation had no definitive receipt. |
+| Previous-deployment semantic proof | Prior run, see `SUBMISSION.md` | Historical baseline reached `FINALIZED` / `MAJORITY_AGREE`, status `RELIABLE`; a separate prior revalidation attempt had no definitive receipt. Current-address successful semantic baseline and revalidation are recorded below. |
 | Current-source deployment parity | GenLayer CLI code retrieval, see `docs/DEPLOYMENT.md` | Verified exact normalized source match; SHA-256 `a5fed29ee04bb9da09a188712108420ef03472fe3062b745c553b860470c2aa1`. Deployment tx `0x20b1ff738043da829594a4e0f3f5311beafe5f4d06996ff4bb231891ef53206b` is `FINALIZED` / `MAJORITY_AGREE`. |
 | Clean clone | GitHub commit `9d06206f62b4e89d0f8e2d0f5dbdf4962a0e2041`, cloned directly from `main` | `pip install --no-index -r requirements.txt` confirmed all pins were already installed; Direct Mode 21 passed, lint 3 checks passed, schema 22 methods passed. Dependencies used the shared installed Python environment, not an isolated virtual environment. |
+| Isolated dependency bootstrap | Fresh `.venv-verification` using `python -m pip install -r requirements.txt` | Pinned dependencies installed, including `genlayer-test==0.29.2`, `genlayer-py==0.16.3`, `genvm-linter==0.11.0`, and `pytest==8.4.2`. The wheel's Direct Mode loader needed a disposable local Windows temp-file cleanup compatibility patch; then 21 tests passed. Isolated lint passed 3 checks and schema remained 22 methods. |
 | Current-source Studionet lifecycle | Canonical address `0x9aF3aa61bEF38Abb597d7078F36659CBaFd65610`; `gltest tests/integration/test_studionet_lifecycle.py -v -s --network studionet` | Passed: 1 integration test, 10 lifecycle transactions `FINALIZED` / `MAJORITY_AGREE`; baseline and full revalidation `RELIABLE`, replay `WOULD_REQUIRE_REVIEW`, challenge `UPHELD`, unavailable evidence `NEEDS_REVIEW`, dependent status reviewable, bounded impact `impact_5` complete. Hashes below. |
+| Current-source semantic lifecycle | Same canonical address; `gltest tests/integration/test_studionet_semantic.py -v -s --network studionet` | Passed: baseline and full semantic revalidation both `FINALIZED` / `MAJORITY_AGREE`, and both reported `RELIABLE`. Baseline `0xd61a3efdde33e445da32becc2c792f4347079485b68a277b17b0b321185dad3d`; revalidation `0x3fb37f4492408cc9268445f6e0b283a8be266105ecdc876dc59f263ba50cb1b8`. One earlier revalidation transaction ended `CANCELED` / `NO_MAJORITY` and is not counted as success. |
 
 ## Test scope
 
@@ -64,3 +66,5 @@ Network: GenLayer Studionet (`https://studio.genlayer.com/api`). Canonical contr
 | Bounded impact propagation | `0x43304ae53af6c1760719d01330a2850ca2dd9cff8b156dc83e8f2a5de72d415f` | `FINALIZED` / `MAJORITY_AGREE`; `impact_5` complete |
 
 The integration command completed with `1 passed` in 484.53 seconds. It emitted one pytest cache permission warning; this did not affect the test result. The exact-text evidence used the frozen registered official documentation URL and `WEB_RENDER_HTML` retrieval.
+
+The semantic integration command completed with `1 passed` in 229.91 seconds. Its successful run used a fresh decision, exact official-docs source URL, semantic assumption, bounded `FINALIZED` waits, and read-only RPC retries. The first attempt's revalidation transaction `0x35408d2d99c5e448d5057840cb7ecb2a8a77fe294321c91ea8b21c79fb8f2486` ended `CANCELED` / `NO_MAJORITY`; it is explicitly excluded from successful evidence. The passing helper retries only when the prior receipt is terminally canceled, never when transaction status is unknown.
