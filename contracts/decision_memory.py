@@ -153,17 +153,53 @@ def _support_rank(value):
     return {"SUPPORTED": 0, "WEAKENED": 1, "INSUFFICIENT": 2, "UNAVAILABLE": 2, "CONTRADICTED": 3}.get(value, 2)
 
 
+def _finding_fields_coherent(finding):
+    """Reject typed findings whose safety flags contradict their conclusion."""
+    support = finding.get("support_state")
+    materiality = finding.get("materiality")
+    sufficient = finding.get("evidence_sufficient")
+    external_failure = finding.get("external_failure")
+    critical_conflict = finding.get("critical_conflict")
+
+    if external_failure:
+        return (
+            not sufficient
+            and support == "UNAVAILABLE"
+            and materiality == "EXTERNAL_FAILURE"
+            and not critical_conflict
+        )
+    if support == "UNAVAILABLE":
+        return not sufficient and materiality == "EXTERNAL_FAILURE" and not critical_conflict
+    if support == "INSUFFICIENT":
+        return not sufficient and materiality == "INSUFFICIENT_EVIDENCE" and not critical_conflict
+    if not sufficient or materiality in ("INSUFFICIENT_EVIDENCE", "EXTERNAL_FAILURE"):
+        return False
+    if critical_conflict:
+        return support == "CONTRADICTED" and materiality == "CRITICAL_CHANGE"
+    if support == "CONTRADICTED":
+        return materiality in ("MAJOR_CHANGE", "CRITICAL_CHANGE")
+    return support in ("SUPPORTED", "WEAKENED")
+
+
 def _derive_semantic_status(assumptions, findings, minor_points, major_count, critical_count):
     critical_conflict = False
+    coherent_critical_change = False
     unsupported_critical = False
     any_contradiction = False
     any_uncertain = False
     any_weak = False
     for assumption in assumptions:
         finding = findings.get(assumption["assumption_id"], {})
+        if not _finding_fields_coherent(finding):
+            any_uncertain = True
+            if assumption["criticality"] == "CRITICAL":
+                unsupported_critical = True
+            continue
         support = finding.get("support_state", "INSUFFICIENT")
         materiality = finding.get("materiality", "INSUFFICIENT_EVIDENCE")
-        if critical_count > 0 or (assumption["criticality"] == "CRITICAL" and (support == "CONTRADICTED" or finding.get("critical_conflict", False))):
+        if materiality == "CRITICAL_CHANGE":
+            coherent_critical_change = True
+        if assumption["criticality"] == "CRITICAL" and (support == "CONTRADICTED" or finding.get("critical_conflict", False)):
             critical_conflict = True
         if assumption["criticality"] == "CRITICAL" and support != "SUPPORTED":
             unsupported_critical = True
@@ -173,7 +209,7 @@ def _derive_semantic_status(assumptions, findings, minor_points, major_count, cr
             any_uncertain = True
         if support == "WEAKENED" or materiality in ("MINOR_CHANGE", "MAJOR_CHANGE"):
             any_weak = True
-    if critical_conflict:
+    if critical_conflict or coherent_critical_change:
         return "INVALIDATED"
     if unsupported_critical or any_uncertain:
         return "NEEDS_REVIEW"
@@ -226,6 +262,8 @@ def _valid_report(reports, selected_ids):
         for key in ("evidence_sufficient", "external_failure", "critical_conflict"):
             if type(report.get(key)) is not bool:
                 return False
+        if not _finding_fields_coherent(report):
+            return False
         codes = report.get("stable_fact_codes")
         if not isinstance(codes, list) or len(codes) > 3:
             return False
@@ -421,6 +459,8 @@ class DecisionMemory(gl.Contract):
             for key in ("evidence_sufficient", "external_failure", "critical_conflict"):
                 if type(report.get(key)) is not bool:
                     return False
+            if not _finding_fields_coherent(report):
+                return False
             codes = report.get("stable_fact_codes")
             if not isinstance(codes, list) or len(codes) > 3:
                 return False

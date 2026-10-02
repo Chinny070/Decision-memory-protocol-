@@ -281,6 +281,74 @@ def test_semantic_web_assessment_rechecks_content_and_rejects_false_typed_leader
         context.__exit__(None, None, None)
 
 
+def test_report_validation_rejects_incoherent_evidence_safety_fields():
+    vm = VMContext()
+    vm.check_pickling = True
+    vm.strict_mocks = True
+    vm.mock_web("https://example.org/security", {"status": 200, "body": "<main>Security controls remain current.</main>"})
+    supported = json.dumps({
+        "support_state": "SUPPORTED",
+        "materiality": "NO_MATERIAL_CHANGE",
+        "evidence_sufficient": True,
+        "external_failure": False,
+        "critical_conflict": False,
+        "stable_fact_codes": ["CONTROLS_CURRENT"],
+        "explanation": "Current evidence supports the frozen claim.",
+    })
+    vm.mock_llm("You are an evidence analyst", supported)
+    context = vm.activate()
+    context.__enter__()
+    try:
+        contract = deploy_contract(CONTRACT_PATH, vm)
+        semantic_assumptions = json.dumps([{
+            "assumption_id": "security",
+            "statement": "The provider's security controls remain materially equivalent.",
+            "criticality": "MAJOR",
+            "evaluation_mode": "SEMANTIC",
+            "sources": [{"url": "https://example.org/security", "retrieval_kind": "WEB_RENDER_HTML"}],
+        }])
+        contract.register_decision("S2", "provider:example", "Provider may process data", "Controls must remain current.", semantic_assumptions, "[]", 3600, 600)
+        contract.establish_baseline("S2")
+
+        coherent = {
+            "assumption_id": "security",
+            **json.loads(supported),
+            "evidence_receipts": [],
+        }
+        assert contract._valid_report([coherent], ["security"]) is True
+
+        contradictory_findings = []
+        insufficient_but_supported = dict(coherent, evidence_sufficient=False)
+        contradictory_findings.append(insufficient_but_supported)
+        unavailable_but_supported = dict(coherent, evidence_sufficient=False, external_failure=True)
+        contradictory_findings.append(unavailable_but_supported)
+        failed_but_supported = dict(coherent, external_failure=True)
+        contradictory_findings.append(failed_but_supported)
+        unsupported_critical_conflict = dict(
+            coherent,
+            evidence_sufficient=False,
+            critical_conflict=True,
+        )
+        contradictory_findings.append(unsupported_critical_conflict)
+        false_unavailable_claim = dict(
+            coherent,
+            support_state="UNAVAILABLE",
+            materiality="NO_MATERIAL_CHANGE",
+            evidence_sufficient=False,
+            external_failure=True,
+        )
+        contradictory_findings.append(false_unavailable_claim)
+
+        for finding in contradictory_findings:
+            assert contract._valid_report([finding], ["security"]) is False
+            # Exercise the validator path too: incoherent leader output must
+            # fail before it can be accepted or mutate the reliable baseline.
+            assert vm.run_validator(leader_result=[finding]) is False
+        assert contract.get_reliance_status("S2") == "RELIABLE"
+    finally:
+        context.__exit__(None, None, None)
+
+
 def _single_exact_assumption(url="https://example.com/exact", marker="licensed", criticality="CRITICAL"):
     return json.dumps([{
         "assumption_id": "exact",
