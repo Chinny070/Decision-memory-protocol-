@@ -14,7 +14,7 @@ Current source: 22 Direct Mode tests passed, 3 GenVM lint checks passed, 22-meth
 
 - Semantic baseline `0xda093eb850af5749a1f7daacea71363da4beb4f26cdf7804f7aeb6c37d07bd66`: `FINALIZED` / `MAJORITY_AGREE`, `RELIABLE`.
 - Full semantic revalidation `0x5e255e514f4acd1473b10437de5a959c19a2736fbe34f18ee69aae61efed01ba`: `FINALIZED` / `MAJORITY_AGREE`, `RELIABLE`.
-- A broader lifecycle run on this deployment finalized registration, baseline, revalidation, replay (`WOULD_REQUIRE_REVIEW`), and challenge (`UPHELD`), then receipt polling received RPC HTTP 502. A complete rerun passed all lifecycle steps, including unavailable-source fail-closed handling and bounded dependency propagation. Transaction detail is in `docs/VERIFICATION.md`.
+- The successful lifecycle run finalized registration, baseline, revalidation, replay (`WOULD_REQUIRE_REVIEW`), challenge (`UPHELD`), unavailable-source fail-closed handling, and bounded dependency propagation. A prior attempt was interrupted by RPC HTTP 502; the completed rerun and all transaction hashes are recorded in `docs/VERIFICATION.md`. Transaction detail is in `docs/VERIFICATION.md`.
 
 ## Previous deployment details
 
@@ -29,7 +29,7 @@ Current source: 22 Direct Mode tests passed, 3 GenVM lint checks passed, 22-meth
 | Gate | Status | Evidence |
 | --- | --- | --- |
 | Contract / runtime | Green for local verification | Current source: 22 Direct Mode tests, 3 GenVM lint checks, and 22-method schema pass. GitHub clean-clone verification is recorded in `docs/VERIFICATION.md`. |
-| Real consensus | Green | The current deployment, semantic proof, and all 10 writes in the current-address lifecycle finalized with majority agreement.
+| Real consensus | Green | The current deployment, semantic proof, and all 10 writes in the current-address lifecycle finalized with majority agreement. |
 | Real evidence | Green | Current deployment browser-render baseline and revalidation were `RELIABLE`; unavailable source yielded `NEEDS_REVIEW`; counterfactual replay and challenge finalized; hashes below. |
 | Steward-requested semantic safety fix | Green | Cross-field report validation, reducer defense-in-depth, contradictory-field adversarial test, current GitHub source, and deployed source parity are recorded above and in `docs/VERIFICATION.md`. |
 
