@@ -24,7 +24,7 @@ The contract pins the official `py-genlayer` SDK through the dependency header. 
 | Previous-source hosted lifecycle | Prior Studionet run; see `SUBMISSION.md` | Historical accepted proofs describe only the previous contract source. |
 | Semantic live baseline | Prior run, see `SUBMISSION.md` | Focused claim reached `FINALIZED` / `MAJORITY_AGREE`, status `RELIABLE`. Following revalidation had no definitive receipt. |
 | Current-source deployment parity | GenLayer CLI code retrieval, see `docs/DEPLOYMENT.md` | Verified exact normalized source match; SHA-256 `a5fed29ee04bb9da09a188712108420ef03472fe3062b745c553b860470c2aa1`. Deployment tx `0x20b1ff738043da829594a4e0f3f5311beafe5f4d06996ff4bb231891ef53206b` is `FINALIZED` / `MAJORITY_AGREE`. |
-| Clean clone | Temporary candidate repository commit `f8919a885dcd24bcabda5e03d51c8b9c77175062`, cloned locally from the current tracked working-tree contents | `pip install --no-index -r requirements.txt` confirmed all pins installed; Direct Mode 20 passed, lint 3 checks passed, schema 22 methods passed. This temporary commit is not a commit in the workspace repository because its `.git` is read-only. |
+| Clean clone | GitHub commit `9d06206f62b4e89d0f8e2d0f5dbdf4962a0e2041`, cloned directly from `main` | `pip install --no-index -r requirements.txt` confirmed all pins were already installed; Direct Mode 21 passed, lint 3 checks passed, schema 22 methods passed. Dependencies used the shared installed Python environment, not an isolated virtual environment. |
 
 ## Test scope
 

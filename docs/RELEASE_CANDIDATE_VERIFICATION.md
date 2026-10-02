@@ -9,7 +9,7 @@
 - Pickling/serialization: enabled in Direct Mode tests.
 - GenVM linter 0.11.0: 3 checks passed.
 - GenVM schema: 22 methods (14 read, 8 write).
-- Clean clone: temporary candidate commit `f8919a885dcd24bcabda5e03d51c8b9c77175062` passed requirements resolution, 20 Direct Mode tests, lint (3 checks), and schema (22 methods). Clean-clone recheck of the latest adversarial test addition is pending.
+- Clean clone: GitHub commit `9d06206f62b4e89d0f8e2d0f5dbdf4962a0e2041` cloned directly from `main`; requirements resolved from already installed pins, 21 Direct Mode tests passed, lint passed 3 checks, and schema stayed at 22 methods.
 
 ## Current deployment (latest challenge-fix source)
 
