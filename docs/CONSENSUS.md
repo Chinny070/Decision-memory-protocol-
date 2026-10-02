@@ -16,7 +16,7 @@ The custom `gl.vm.run_nondet_unsafe(leader_fn, validator_fn)` validator:
 
 A well-formed but substantively false leader report is rejected when the validator's own evidence evaluation differs. Error results are rejected; malformed model output becomes `INSUFFICIENT`, not positive support. Stable fact codes and prose are excluded from typed equivalence. Replay validators require exact agreement on the `replay_result` enum that will be stored and exposed; the explanatory `finding_digest` may differ. Any typed-result disagreement fails consensus and cannot mutate state.
 
-For EXACT_TEXT challenges, the deterministic criterion is the single unique `match_text` frozen at registration. The challenger may supply another HTTPS evidence URL, but `factual_ground` is never substituted for the criterion. Registration rejects an EXACT_TEXT assumption whose source definitions contain different markers.
+For EXACT_TEXT assumptions, source URLs, retrieval kinds, and the single unique `match_text` are frozen at registration. A permissionless challenge must select one of those registered source URLs; it cannot add evidence authority. The selected source is fetched with its frozen retrieval kind and evaluated against the frozen marker. `factual_ground` remains untrusted context and never changes deterministic matching. Registration rejects an EXACT_TEXT assumption whose source definitions contain different markers. A selected source failure is `UNAVAILABLE` / `EXTERNAL_FAILURE`; availability of another source cannot turn that failure into contradiction.
 
 ## Evidence receipts
 

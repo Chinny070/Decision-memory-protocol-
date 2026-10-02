@@ -300,7 +300,16 @@ class DecisionMemory(gl.Contract):
                     continue
                 evidence_items = []
                 source_list = assumption["sources"]
-                if evidence_override and assumption["assumption_id"] in selected_ids:
+                if evidence_override and assumption["assumption_id"] in selected_ids and assumption["evaluation_mode"] == "EXACT_TEXT":
+                    # EXACT_TEXT challenges can select only a registered source;
+                    # retain its frozen retrieval configuration and marker.
+                    source_list = []
+                    for source in assumption["sources"]:
+                        if source["url"] == evidence_override:
+                            source_list.append(source)
+                            break
+                elif evidence_override and assumption["assumption_id"] in selected_ids:
+                    # Semantic challenges may add supplemental evidence.
                     source_list = source_list + [{"url": evidence_override, "retrieval_kind": "WEB_RENDER_HTML"}]
                 for source in source_list:
                     try:
@@ -325,13 +334,14 @@ class DecisionMemory(gl.Contract):
                         marker = source.get("match_text", "")
                         if marker and marker not in markers:
                             markers.append(marker)
+                    eligible_evidence = evidence_items
+                    if evidence_override:
+                        eligible_evidence = [item for item in evidence_items if item["url"] == evidence_override]
                     available = False
                     matched = False
-                    for evidence in evidence_items:
+                    for evidence in eligible_evidence:
                         if evidence["status"] == "AVAILABLE":
                             available = True
-                            if evidence_override and evidence["url"] != evidence_override:
-                                continue
                             if markers and any(marker in evidence["content"] for marker in markers):
                                 matched = True
                     if matched:
@@ -669,6 +679,13 @@ class DecisionMemory(gl.Contract):
                 found = True
         if not found:
             raise gl.vm.UserError("unknown assumption id")
+        if any(
+            assumption["assumption_id"] == assumption_id
+            and assumption["evaluation_mode"] == "EXACT_TEXT"
+            and not any(source["url"] == new_evidence_url for source in assumption["sources"])
+            for assumption in decision["assumptions"]
+        ):
+            raise gl.vm.UserError("EXACT_TEXT challenge evidence must use a frozen registered source")
         if len(self.challenge_ids) >= MAX_DECISIONS * MAX_CHALLENGES:
             raise gl.vm.UserError("challenge receipt capacity reached")
         challenge_identity = _hash({"decision_id": decision_id, "assumption_id": assumption_id, "reason_code": reason_code, "new_evidence_url": new_evidence_url, "factual_ground_hash": _hash(factual_ground)})

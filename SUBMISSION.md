@@ -4,11 +4,11 @@
 
 ## Current source security update
 
-The current repository source includes targeted fixes for EXACT_TEXT challenge marker substitution, predecessor successor-slot authorization, evidence render/content hash validator binding, replay exact-enum consensus, and duplicate challenge quota exhaustion. `python -m pytest -q tests/direct` passes 17 tests; `genvm-lint check` passes 3 checks; `genvm-lint schema` generates the 22-method ABI. Security details are in `docs/SECURITY.md`, consensus behavior in `docs/CONSENSUS.md`, and test details in `docs/VERIFICATION.md`.
+The current repository source includes targeted fixes for EXACT_TEXT challenge evidence authority and unavailable selected-source handling, along with predecessor successor-slot authorization, evidence render/content hash validator binding, replay exact-enum consensus, and duplicate challenge quota exhaustion. Current source has 20 Direct Mode passes, 3 GenVM lint checks, a 22-method schema, and a clean temporary candidate-clone check. Its Studionet deployment and retrieved-source parity are verified below; current-address application lifecycle proofs remain pending.
 
-**Current deployment:** `0x81F5dE555814a8C48Da2FeC654Df40a616b64e71`, transaction `0x6059226441770fc986ab0b553520a914b61c5912899aacaa1f8e7812a6615179`, `FINALIZED` / `MAJORITY_AGREE`. Deployed-source parity is verified against source commit `2ae77cfca02bb81f770aa4e1838a846260decafa` (blob `d7993a030b372d0e7debb51c7d01842b77d10171`, SHA-256 `57ff36d5de87f6de92a9c7580a6fd37017b92f2a6fed1c39066864b26c323254`). Current-source exact-text and semantic live lifecycle proofs have now passed; prior-address records remain labeled separately.
+**Current deployment:** `0x9aF3aa61bEF38Abb597d7078F36659CBaFd65610`, transaction `0x20b1ff738043da829594a4e0f3f5311beafe5f4d06996ff4bb231891ef53206b`, `FINALIZED` / `MAJORITY_AGREE`. Retrieved-source parity with the current contract file is verified (SHA-256 `a5fed29ee04bb9da09a188712108420ef03472fe3062b745c553b860470c2aa1`; blob `c27f7ee4c97f8b9edc5ec42a7b9db772e5c6fe37`). The matching temporary candidate snapshot is `f8919a885dcd24bcabda5e03d51c8b9c77175062`; workspace `.git` is read-only, so it is not a commit on the project branch or GitHub.
 
-## Current deployment details
+## Previous deployment details
 
 - Studionet address: `0x81F5dE555814a8C48Da2FeC654Df40a616b64e71`.
 - Deployment transaction: `0x6059226441770fc986ab0b553520a914b61c5912899aacaa1f8e7812a6615179`, `FINALIZED` / `MAJORITY_AGREE`.
@@ -20,10 +20,10 @@ The current repository source includes targeted fixes for EXACT_TEXT challenge m
 
 | Gate | Status | Evidence |
 | --- | --- | --- |
-| Contract / runtime | Partial | 17 current-source Direct Mode tests and GenVM lint/schema pass; no clean clone of the security-fix commit is recorded yet. |
-| Real consensus | Green for the recorded live proofs | Current deployment exact-text baseline, full revalidation, replay, evidence-backed challenge, fail-closed source handling, bounded dependency propagation, and semantic baseline/full revalidation reached accepted majority consensus. One earlier replay attempt was `UNDETERMINED`; a subsequent replay reached majority agreement. |
-| Real evidence | Partial | Current deployment browser-rendered official documentation established reliable exact-text baseline/revalidation; the focused semantic baseline and full revalidation also returned `RELIABLE`. A semantic material-drift case is not part of this live proof. |
-| Steward fit | Partial | Rejection audit and DM1â€“DM15 map are documented. Current-source dependency propagation and semantic revalidation are verified. A clean clone of the final documentation/evidence commit remains outstanding. |
+| Contract / runtime | Green for local verification | Current source: 20 Direct Mode tests, 3 GenVM lint checks, and 22-method schema pass in workspace and clean temporary candidate clone. FINALIZED-aware helper was inspected, not exercised against Studionet. Workspace `.git` is read-only, so no repository commit was created. |
+| Real consensus | Partial | The current-source deployment reached finalized majority consensus. Application lifecycle transactions have not been run at the new address; previous-source exact-text and semantic proofs remain historical. |
+| Real evidence | Partial | Previous-source browser-rendered official documentation established reliable exact-text baseline/revalidation; semantic baseline/revalidation also returned `RELIABLE`. Current-address evidence lifecycle remains unverified. |
+| Steward fit | Partial | Rejection audit and DM1â€“DM15 map are documented. Current source has no live dependency propagation proof. Current candidate clean-clone check passed, but it is a temporary snapshot commit rather than a workspace repository commit. |
 
 ## Submission copy (not final until all gates clear)
 
@@ -31,21 +31,21 @@ The current repository source includes targeted fixes for EXACT_TEXT challenge m
 - **Title:** Decision Memory Protocol â€” immutable decision context, semantic revalidation, counterfactual replay, and dependency-aware reliance.
 - **One-line thesis:** Preserves why a decision was defensible, revalidates its assumptions against evidence, and deterministically propagates reliance changes without rewriting history.
 - **Repository:** https://github.com/Chinny070/Decision-memory-protocol-
-- **Current Studionet address:** [0x81F5dE555814a8C48Da2FeC654Df40a616b64e71](https://explorer-studio.genlayer.com/address/0x81F5dE555814a8C48Da2FeC654Df40a616b64e71)
-- **Deployment transaction:** `0x6059226441770fc986ab0b553520a914b61c5912899aacaa1f8e7812a6615179`, `FINALIZED`, `MAJORITY_AGREE`.
-- **Deployment source commit:** contract source from `2ae77cfca02bb81f770aa4e1838a846260decafa`.
+- **Current Studionet address:** [0x9aF3aa61bEF38Abb597d7078F36659CBaFd65610](https://explorer-studio.genlayer.com/address/0x9aF3aa61bEF38Abb597d7078F36659CBaFd65610).
+- **Deployment transaction:** `0x20b1ff738043da829594a4e0f3f5311beafe5f4d06996ff4bb231891ef53206b`, `FINALIZED`, `MAJORITY_AGREE`.
+- **Deployment source:** current local contract file; normalized parity hash `a5fed29ee04bb9da09a188712108420ef03472fe3062b745c553b860470c2aa1`. No Git commit is available for these uncommitted workspace changes.
 - **Why GenLayer:** Validators independently retrieve and interpret external evidence; one creator, API, or model must not author reliance alone.
 - **Consensus mechanism:** Custom leader/validator nondeterministic evaluation with typed substantive equivalence; deterministic code derives reliance and graph effects.
 - **Failure policy:** Insufficient evidence, source failure, or consensus disagreement never creates affirmative reliance; transaction-level disagreement is not an application status.
 - **Reuse surface:** `get_reliance_certificate`, `get_reliance_status`, `is_reliable`, plus bounded lifecycle writes.
-- **Verified local checks:** 17 Direct Mode tests; 3 GenVM lint checks; 22-method schema; deployed source parity verified for the security-fix commit.
-- **Verified live checks:** Deployment receipt, schema, and source parity verified for the new address. Current-source lifecycle transactions are listed below; older transaction records are in the previous-deployment section.
+- **Verified local checks:** Current source: 20 Direct Mode tests passed, 3 GenVM lint checks passed, 22-method schema passed, including a clean temporary clone at `f8919a885dcd24bcabda5e03d51c8b9c77175062`.
+- **Verified live checks:** Current deployment receipt, schema, and exact source parity are verified. The lifecycle transactions below are historical proofs against the previous deployment; no current-address application lifecycle transaction was run.
 - **Reviewer fast path:** `README.md`, `DECISION.md`, `docs/ARCHITECTURE.md`, `docs/INVARIANTS.md`, `docs/CONSENSUS.md`, and `docs/RELEASE_CANDIDATE_VERIFICATION.md`.
-- **Portal description:** Decision Memory Protocol is a reusable GenLayer Intelligent Contract that preserves decision context and critical assumptions, revalidates them against independently retrieved evidence, and gives downstream contracts a machine-readable reliance certificate. Validators independently assess external evidence; deterministic contract logic derives reliance state, lease freshness, successor lineage, and bounded dependency impact. It includes immutable counterfactual replay and fail-closed evidence handling. Direct Mode, GenVM validation, and current-source exact-text and semantic lifecycles passed. A clean clone of the final docs commit remains unverified.
+- **Portal description:** Decision Memory Protocol is a reusable GenLayer Intelligent Contract that preserves decision context and critical assumptions, revalidates them against independently retrieved evidence, and gives downstream contracts a machine-readable reliance certificate. Validators independently assess external evidence; deterministic contract logic derives reliance state, lease freshness, successor lineage, and bounded dependency impact. It includes immutable counterfactual replay and fail-closed evidence handling. Current-source Direct Mode and GenVM validation pass; deployed source matches the local contract file. Previous-address exact-text and semantic lifecycle results are historical; current-address lifecycle proofs remain pending.
 
-## Current-source Studionet lifecycle evidence
+## Previous-address Studionet lifecycle evidence
 
-All listed writes ran against `0x81F5dE555814a8C48Da2FeC654Df40a616b64e71`. Accepted writes reached `MAJORITY_AGREE`; Explorer shows finalized transactions.
+All listed writes ran against previous-source address `0x81F5dE555814a8C48Da2FeC654Df40a616b64e71`. These are historical proofs and do not verify the current repository source.
 
 | Proof | Transaction | Verified result |
 | --- | --- | --- |
@@ -63,7 +63,7 @@ All listed writes ran against `0x81F5dE555814a8C48Da2FeC654Df40a616b64e71`. Acce
 | Semantic baseline | `0x344634ce74377f4fd14fff5e8b8cc1d3402c43e805d78b493e28c0a97f989ca9` | `RELIABLE` |
 | Semantic full revalidation | `0x632b8dfe020583fc3ea350432789666e30df5becf858687909e154b979010cbe` | `RELIABLE` |
 
-An initial run on this deployment also accepted baseline and revalidation but produced replay transaction `0x891d1758dd34fa65192da18e1fc7df299f3399fc617465c5bda614cee41f4d7a` with Explorer consensus `Undetermined`. It did not produce an application replay receipt. The subsequent full lifecycle run above produced the accepted replay result. The current-source exact-text integration test and semantic integration test each passed.
+An initial run on this deployment also accepted baseline and revalidation but produced replay transaction `0x891d1758dd34fa65192da18e1fc7df299f3399fc617465c5bda614cee41f4d7a` with Explorer consensus `Undetermined`. It did not produce an application replay receipt. The subsequent full lifecycle run above produced the accepted replay result. These exact-text and semantic integration runs verified only the source deployed at this previous address, not the current repository source.
 
 ## Previous deployment and source parity (pre-fix)
 
@@ -95,7 +95,7 @@ The successful pre-fix lifecycle used decision prefix `live-docs-10892` on the p
 | Dependent baseline | `0xf20237d48ecab71bb438993be2c6c27dde0d35930f16a483414a602475887465` | `ACCEPTED` / `MAJORITY_AGREE`; dependent status `NEEDS_REVIEW` |
 | Bounded dependency propagation | `0xa6bc9ffb153cf8e82fa449c0a0a9d72b7b7dff68919f4300631ddfad56a94376` | `FINALIZED` / `MAJORITY_AGREE`; event `impact_4` complete |
 
-On the previous deployment, the initial test process lost RPC connectivity while polling dependent registration; its receipt was reconciled and a resume test verified propagation. Current-source lifecycle proofs are recorded separately above. An earlier challenge transaction `0x97a00d95b19bc35c693e0047ee8befb541fb41fc270745ae829d0d0a875237f4` was `CANCELED` before validator rounds and is not counted as success.
+On the previous deployment, the initial test process lost RPC connectivity while polling dependent registration; its receipt was reconciled and a resume test verified propagation. No application lifecycle has yet been run at the current address. An earlier challenge transaction `0x97a00d95b19bc35c693e0047ee8befb541fb41fc270745ae829d0d0a875237f4` was `CANCELED` before validator rounds and is not counted as success.
 
 ## Previous-source semantic-mode live proof
 
@@ -119,4 +119,4 @@ On the previous deployment, the initial test process lost RPC connectivity while
 
 ## Remaining gate
 
-The previous deployment’s semantic revalidation still lacks a definitive receipt; this is historical and does not describe the current address. Current-source lifecycle proofs passed. A clean clone of the final repository documentation commit remains outstanding. Do not mark all four gates green or call the project finalized until those gates pass.
+The previous deployment’s semantic revalidation transaction listed above reached `RELIABLE`; an earlier first attempt on the earlier contract did not produce a definitive receipt. No application lifecycle proof exists for the current deployment. The clean candidate-clone check applies to the current contract and tests, but the workspace has no Git commit for those changes. Do not mark all four gates green or call the project finalized until remaining gates pass.

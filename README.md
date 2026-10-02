@@ -80,4 +80,4 @@ All three use the same certificate and safety gate; no domain-specific contract 
 
 ## Current verification state
 
-Current source has 17 passing Direct Mode tests, passing GenVM lint, and a generated 22-method schema. The security-corrected source is deployed on Studionet at `0x81F5dE555814a8C48Da2FeC654Df40a616b64e71`; receipt and exact source parity are verified. Current-source exact-text and semantic lifecycle proofs passed at this address; prior-address records remain historical. See [SUBMISSION.md](SUBMISSION.md) and [docs/VERIFICATION.md](docs/VERIFICATION.md) for evidence and limits.
+The current source passes 20 Direct Mode tests, 3 GenVM lint checks, and its schema has 22 methods. It is deployed on Studionet at [0x9aF3aa61bEF38Abb597d7078F36659CBaFd65610](https://explorer-studio.genlayer.com/address/0x9aF3aa61bEF38Abb597d7078F36659CBaFd65610); the deployment is finalized and retrieved-source parity is verified. Application lifecycle proofs against this address remain to be run. See [SUBMISSION.md](SUBMISSION.md), [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md), and [docs/VERIFICATION.md](docs/VERIFICATION.md) for evidence and limits.

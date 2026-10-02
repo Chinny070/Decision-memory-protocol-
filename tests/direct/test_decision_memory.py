@@ -193,13 +193,14 @@ def test_evidence_backed_challenge_records_fresh_receipt_without_rewriting_basel
     try:
         register(contract)
         baseline = contract.establish_baseline("D1")
-        vm.mock_web("https://example.net/license-claim", {"status": 200, "body": "Registry confirms licensed provider"})
+        vm.clear_mocks()
+        vm.mock_web("https://example.com/license", {"status": 200, "body": "Registry confirms licensed provider"})
         challenge = contract.challenge_revalidation(
-            "D1", "license", "NEW_EVIDENCE", "https://example.net/license-claim",
+            "D1", "license", "NEW_EVIDENCE", "https://example.com/license",
             "Registry confirms licensed provider",
         )
         assert challenge["result"] == "UPHELD"
-        assert challenge["new_evidence_url"] == "https://example.net/license-claim"
+        assert challenge["new_evidence_url"] == "https://example.com/license"
         assert contract.get_decision("D1")["baseline_receipt_id"] == baseline["receipt_id"]
         assert contract.get_challenge(challenge["challenge_id"])["result"] == "UPHELD"
     finally:
@@ -297,7 +298,7 @@ def _register_exact(contract, decision_id="E1", url="https://example.com/exact",
     )
 
 
-def test_exact_text_challenge_cannot_replace_frozen_marker_and_legitimate_challenge_works():
+def test_exact_text_challenge_rejects_unregistered_evidence_authority():
     vm, context, contract = deploy(mock_sources=False)
     try:
         original = "https://example.com/exact"
@@ -309,19 +310,91 @@ def test_exact_text_challenge_cannot_replace_frozen_marker_and_legitimate_challe
         vm.mock_web(original, {"status": 200, "body": "license revoked"})
         contract.revalidate("E1", '["exact"]')
         assert contract.get_reliance_status("E1") == "INVALIDATED"
+        before_decision = contract.get_decision("E1")
+        before_status = contract.get_reliance_status("E1")
+        with vm.expect_revert("EXACT_TEXT challenge evidence must use a frozen registered source"):
+            contract.challenge_revalidation("E1", "exact", "NEW_EVIDENCE", attacker, "everything-is-fine")
+        after_decision = contract.get_decision("E1")
+        assert after_decision["challenge_count"] == before_decision["challenge_count"]
+        assert after_decision["current_findings"] == before_decision["current_findings"]
+        assert contract.get_reliance_status("E1") == before_status
+        assert contract.latest_challenge_by_decision.get("E1", "") == ""
+        assert len(contract.challenge_ids) == 0
         vm.clear_mocks()
-        vm.mock_web(attacker, {"status": 200, "body": "everything-is-fine"})
-        hostile = contract.challenge_revalidation("E1", "exact", "NEW_EVIDENCE", attacker, "everything-is-fine")
-        assert hostile["finding"]["support_state"] == "CONTRADICTED"
-        assert contract.get_reliance_status("E1") == "INVALIDATED"
+        vm.mock_web(original, {"status": 200, "body": "licensed"})
+        legitimate = contract.challenge_revalidation("E1", "exact", "NEW_EVIDENCE", original, "untrusted context")
+        assert legitimate["finding"]["support_state"] == "SUPPORTED"
+        assert contract.get_reliance_status("E1") == "RELIABLE"
         frozen = contract.get_decision("E1")["assumptions"][0]["sources"][0]["match_text"]
         assert frozen == "licensed"
 
-        vm.clear_mocks()
-        vm.mock_web(attacker, {"status": 200, "body": "registry confirms licensed status"})
-        legitimate = contract.challenge_revalidation("E1", "exact", "NEW_EVIDENCE", attacker, "The registry contains the frozen marker.")
-        assert legitimate["finding"]["support_state"] == "SUPPORTED"
+        assert legitimate["finding"]["evidence_receipts"][0]["source_url"] == original
         assert contract.get_decision("E1")["assumptions"][0]["sources"][0]["match_text"] == "licensed"
+    finally:
+        context.__exit__(None, None, None)
+
+
+def test_exact_text_challenge_can_recheck_frozen_registered_source():
+    vm, context, contract = deploy(mock_sources=False)
+    try:
+        original = "https://example.com/exact"
+        vm.mock_web(original, {"status": 200, "body": "licensed"})
+        _register_exact(contract)
+        contract.establish_baseline("E1")
+        vm.clear_mocks()
+        vm.mock_web(original, {"status": 200, "body": "license revoked"})
+        challenge = contract.challenge_revalidation("E1", "exact", "NEW_EVIDENCE", original, "The frozen source changed.")
+        assert challenge["finding"]["support_state"] == "CONTRADICTED"
+        assert contract.get_reliance_status("E1") == "INVALIDATED"
+    finally:
+        context.__exit__(None, None, None)
+
+
+def test_exact_text_challenge_unavailable_selected_source_fails_closed():
+    vm, context, contract = deploy(mock_sources=False)
+    try:
+        selected = "https://example.com/exact-selected"
+        other = "https://example.com/exact-other"
+        source_assumptions = json.dumps([{
+            "assumption_id": "exact", "statement": "A frozen marker remains published.", "criticality": "CRITICAL",
+            "evaluation_mode": "EXACT_TEXT", "sources": [
+                {"url": selected, "retrieval_kind": "WEB_RENDER_HTML", "match_text": "licensed"},
+                {"url": other, "retrieval_kind": "WEB_RENDER_HTML", "match_text": "licensed"},
+            ],
+        }])
+        vm.mock_web(selected, {"status": 200, "body": "licensed"})
+        vm.mock_web(other, {"status": 200, "body": "licensed"})
+        contract.register_decision("E1", "subject:exact", "payload", "policy", source_assumptions, "[]", 3600, 600)
+        contract.establish_baseline("E1")
+        vm.clear_mocks()
+        # The other registered source supported the baseline, but challenge
+        # evaluation is scoped to the selected source, which now has no response.
+        challenge = contract.challenge_revalidation("E1", "exact", "NEW_EVIDENCE", selected, "Source is temporarily unavailable.")
+        assert challenge["finding"]["support_state"] == "UNAVAILABLE"
+        assert challenge["finding"]["materiality"] == "EXTERNAL_FAILURE"
+        assert challenge["finding"]["external_failure"] is True
+        assert challenge["finding"]["critical_conflict"] is False
+        assert contract.get_reliance_status("E1") != "INVALIDATED"
+    finally:
+        context.__exit__(None, None, None)
+
+
+def test_exact_text_challenge_preserves_registered_retrieval_kind():
+    vm, context, contract = deploy(mock_sources=False)
+    try:
+        url = "https://example.com/exact-api"
+        source_assumptions = json.dumps([{
+            "assumption_id": "exact", "statement": "The exact marker remains published.", "criticality": "CRITICAL",
+            "evaluation_mode": "EXACT_TEXT", "sources": [{"url": url, "retrieval_kind": "WEB_GET_TEXT", "match_text": "licensed"}],
+        }])
+        vm.mock_web(url, {"status": 200, "body": "licensed"})
+        contract.register_decision("E1", "subject:exact", "payload", "policy", source_assumptions, "[]", 3600, 600)
+        contract.establish_baseline("E1")
+        vm.clear_mocks()
+        vm.mock_web(url, {"status": 200, "body": "license revoked"})
+        challenge = contract.challenge_revalidation("E1", "exact", "NEW_EVIDENCE", url, "Registered retrieval is preserved.")
+        assert challenge["finding"]["support_state"] == "CONTRADICTED"
+        assert challenge["finding"]["evidence_receipts"][0]["retrieval_kind"] == "WEB_GET_TEXT"
     finally:
         context.__exit__(None, None, None)
 
@@ -402,7 +475,8 @@ def test_duplicate_challenge_rejected_without_consuming_quota_and_distinct_chall
     try:
         register(contract)
         contract.establish_baseline("D1")
-        url = "https://example.net/new-evidence"
+        vm.clear_mocks()
+        url = "https://example.com/license"
         vm.mock_web(url, {"status": 200, "body": "Registry confirms licensed provider"})
         args = ("D1", "license", "NEW_EVIDENCE", url, "registry confirms license")
         first = contract.challenge_revalidation(*args)
@@ -412,7 +486,7 @@ def test_duplicate_challenge_rejected_without_consuming_quota_and_distinct_chall
         assert contract.get_decision("D1")["challenge_count"] == 1
         second = contract.challenge_revalidation("D1", "license", "FACTUAL_ERROR", url, "registry independently confirms license")
         assert second["challenge_id"] != first["challenge_id"]
-        third = contract.challenge_revalidation("D1", "service", "SOURCE_CORRECTION", "https://example.net/terms", "published terms remain")
+        third = contract.challenge_revalidation("D1", "service", "SOURCE_CORRECTION", "https://example.com/terms", "published terms remain")
         assert third["challenge_id"] != second["challenge_id"]
         with vm.expect_revert("challenge round limit"):
             contract.challenge_revalidation("D1", "service", "NEW_EVIDENCE", "https://example.net/terms-2", "another distinct claim")

@@ -20,7 +20,8 @@ Callers can submit arbitrary definitions and can challenge observations. Source 
 | Forged leader finding | Independent validator refetches and reevaluates; reliance-critical disagreement rejects consensus. |
 | Forged evidence receipt | Validators compare independently recomputed render/content hashes and receipt metadata against the leader. |
 | Duplicate assumption, dependency, challenge, or successor | Duplicate checks and one-successor / bounded-count rules. |
-| Challenge ground substitutes exact-text assertion | EXACT_TEXT challenge evaluation always uses its single frozen registered marker; ambiguous multi-source markers are rejected at registration. |
+| Caller introduces attacker-controlled evidence authority for EXACT_TEXT | Source URL and retrieval kind are frozen at registration; an EXACT_TEXT challenge must select a registered URL and uses its frozen retrieval configuration and marker. `factual_ground` is untrusted context. |
+| Unavailable challenged EXACT_TEXT source appears contradicted because another source is available | Availability is scoped to the selected frozen source; unavailable means `UNAVAILABLE` / `EXTERNAL_FAILURE`, never contradiction. |
 | Successor slot hijack | Lowest-level `register_decision` check requires sender to equal predecessor creator before predecessor mutation. |
 | Duplicate challenge burns quota | Canonical identity over immutable challenge inputs is checked before consensus and count increment; identity storage is bounded by the existing global challenge cap. |
 | Replay typed-result equivocation | Validators must agree on the exact enum persisted and exposed; only explanatory digest text is excluded. |
@@ -43,6 +44,7 @@ Reentrancy and message ordering are not applicable to this v1 interface: it has 
 ## Deterministic controls
 
 - HTTPS-only source URLs; bounded text, sources, assumptions, dependencies, histories, replays, and challenge rounds.
+- EXACT_TEXT challenges cannot add a source authority; they recheck one frozen registered source with its original retrieval kind and marker.
 - Assumption DAG cycles are impossible in v1 because assumptions cannot depend on one another.
 - Decision dependency cycles are prevented by allowing edges only to existing decisions.
 - Fanout, queue size, propagation work, and total capsule count are capped.

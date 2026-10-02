@@ -8,6 +8,7 @@ from pathlib import Path
 import pytest
 from gltest import get_contract_factory
 from gltest.assertions import tx_execution_succeeded
+from genlayer_py.types import TransactionStatus
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -26,9 +27,13 @@ def _assumption(source_url=DOCS_URL, assumption_id="official-docs"):
 
 
 def _transact(contract, method, *args):
-    receipt = getattr(contract, method)(args=list(args)).transact()
+    receipt = getattr(contract, method)(args=list(args)).transact(
+        wait_transaction_status=TransactionStatus.FINALIZED,
+        wait_interval=3000,
+        wait_retries=50,
+    )
     assert tx_execution_succeeded(receipt), f"{method} failed: {receipt}"
-    assert receipt.get("status_name") == "ACCEPTED", f"{method} did not reach ACCEPTED: {receipt}"
+    assert receipt.get("status_name") == "FINALIZED", f"{method} did not reach FINALIZED: {receipt}"
     assert receipt.get("result_name") == "MAJORITY_AGREE", f"{method} did not reach MAJORITY_AGREE: {receipt}"
     print(f"LIVE_TX method={method} hash={receipt.get('hash') or receipt.get('tx_id')} status={receipt.get('status_name')}")
     return receipt
@@ -70,8 +75,12 @@ def test_live_studionet_reliance_replay_failure_and_dependency_proof():
     assert after_revalidation["last_validation_scope"] == "FULL"
     print(f"LIVE_REVALIDATION status={after_revalidation['current_reliance_status']} tx={revalidation_tx.get('hash') or revalidation_tx.get('tx_id')}")
 
-    replay_tx = contract.create_counterfactual_replay(args=[decision_id, "Policy v2: require the docs page to explicitly document independent validators."]).transact()
-    replay_accepted = replay_tx.get("status_name") == "ACCEPTED" and replay_tx.get("result_name") == "MAJORITY_AGREE"
+    replay_tx = contract.create_counterfactual_replay(args=[decision_id, "Policy v2: require the docs page to explicitly document independent validators."]).transact(
+        wait_transaction_status=TransactionStatus.FINALIZED,
+        wait_interval=3000,
+        wait_retries=50,
+    )
+    replay_accepted = replay_tx.get("status_name") == "FINALIZED" and replay_tx.get("result_name") == "MAJORITY_AGREE"
     replay = contract.get_latest_replay(args=[decision_id]).call() if replay_accepted else None
     print(f"LIVE_REPLAY status={replay_tx.get('status_name')} consensus={replay_tx.get('result_name')} result={replay['typed_result'] if replay else 'NO_ACCEPTED_RESULT'} tx={replay_tx.get('hash') or replay_tx.get('tx_id')}")
     unchanged = contract.get_reliance_certificate(args=[decision_id]).call()
