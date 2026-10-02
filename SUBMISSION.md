@@ -4,7 +4,7 @@
 
 ## Current source security update
 
-The current repository source includes targeted fixes for EXACT_TEXT challenge evidence authority and unavailable selected-source handling, along with predecessor successor-slot authorization, evidence render/content hash validator binding, replay exact-enum consensus, and duplicate challenge quota exhaustion. Current source has 20 Direct Mode passes, 3 GenVM lint checks, a 22-method schema, and a clean temporary candidate-clone check. Its Studionet deployment and retrieved-source parity are verified below; current-address application lifecycle proofs remain pending.
+The current repository source includes targeted fixes for EXACT_TEXT challenge evidence authority and unavailable selected-source handling, along with predecessor successor-slot authorization, evidence render/content hash validator binding, replay exact-enum consensus, and duplicate challenge quota exhaustion. Current source has 21 Direct Mode passes, 3 GenVM lint checks, and a 22-method schema. Its Studionet deployment and retrieved-source parity are verified below; current-address application lifecycle proofs remain pending.
 
 **Current deployment:** `0x9aF3aa61bEF38Abb597d7078F36659CBaFd65610`, transaction `0x20b1ff738043da829594a4e0f3f5311beafe5f4d06996ff4bb231891ef53206b`, `FINALIZED` / `MAJORITY_AGREE`. Retrieved-source parity with the contract file is verified (SHA-256 `a5fed29ee04bb9da09a188712108420ef03472fe3062b745c553b860470c2aa1`; blob `c27f7ee4c97f8b9edc5ec42a7b9db772e5c6fe37`). The source is committed to GitHub `main` at `d5e2c75b7fdff60bbf078036ce48370e42acfa8b`; the local workspace checkout remains dirty because its `.git` is read-only.
 
@@ -20,7 +20,7 @@ The current repository source includes targeted fixes for EXACT_TEXT challenge e
 
 | Gate | Status | Evidence |
 | --- | --- | --- |
-| Contract / runtime | Green for local verification | Current source: 20 Direct Mode tests, 3 GenVM lint checks, and 22-method schema pass in workspace and clean temporary candidate clone. Source is pushed to GitHub `main`. FINALIZED-aware helper was inspected, not exercised against Studionet. |
+| Contract / runtime | Green for local verification | Current source: 21 Direct Mode tests, 3 GenVM lint checks, and 22-method schema pass in the workspace. Source is pushed to GitHub `main`. FINALIZED-aware helper was inspected, not exercised against Studionet. |
 | Real consensus | Partial | The current-source deployment reached finalized majority consensus. Application lifecycle transactions have not been run at the new address; previous-source exact-text and semantic proofs remain historical. |
 | Real evidence | Partial | Previous-source browser-rendered official documentation established reliable exact-text baseline/revalidation; semantic baseline/revalidation also returned `RELIABLE`. Current-address evidence lifecycle remains unverified. |
 | Steward fit | Partial | Rejection audit and DM1â€“DM15 map are documented. Current source has no live dependency propagation proof. Current candidate clean-clone check passed, but it is a temporary snapshot commit rather than a workspace repository commit. |
@@ -38,7 +38,7 @@ The current repository source includes targeted fixes for EXACT_TEXT challenge e
 - **Consensus mechanism:** Custom leader/validator nondeterministic evaluation with typed substantive equivalence; deterministic code derives reliance and graph effects.
 - **Failure policy:** Insufficient evidence, source failure, or consensus disagreement never creates affirmative reliance; transaction-level disagreement is not an application status.
 - **Reuse surface:** `get_reliance_certificate`, `get_reliance_status`, `is_reliable`, plus bounded lifecycle writes.
-- **Verified local checks:** Current source: 20 Direct Mode tests passed, 3 GenVM lint checks passed, 22-method schema passed, including a clean temporary clone at `f8919a885dcd24bcabda5e03d51c8b9c77175062`.
+- **Verified local checks:** Current source: 21 Direct Mode tests passed, 3 GenVM lint checks passed, and 22-method schema passed. Clean-clone recheck of the latest adversarial test addition is pending.
 - **Verified live checks:** Current deployment receipt, schema, and exact source parity are verified. The lifecycle transactions below are historical proofs against the previous deployment; no current-address application lifecycle transaction was run.
 - **Reviewer fast path:** `README.md`, `DECISION.md`, `docs/ARCHITECTURE.md`, `docs/INVARIANTS.md`, `docs/CONSENSUS.md`, and `docs/RELEASE_CANDIDATE_VERIFICATION.md`.
 - **Portal description:** Decision Memory Protocol is a reusable GenLayer Intelligent Contract that preserves decision context and critical assumptions, revalidates them against independently retrieved evidence, and gives downstream contracts a machine-readable reliance certificate. Validators independently assess external evidence; deterministic contract logic derives reliance state, lease freshness, successor lineage, and bounded dependency impact. It includes immutable counterfactual replay and fail-closed evidence handling. Current-source Direct Mode and GenVM validation pass; deployed source matches the local contract file. Previous-address exact-text and semantic lifecycle results are historical; current-address lifecycle proofs remain pending.

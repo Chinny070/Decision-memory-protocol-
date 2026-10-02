@@ -34,7 +34,8 @@ Direct Mode covers the protocol lifecycle and adversarial regressions for frozen
 
 - `test_exact_text_challenge_rejects_unregistered_evidence_authority`: attacker URL is rejected before consensus without creating challenge state; a registered frozen URL can be challenged.
 - `test_exact_text_challenge_can_recheck_frozen_registered_source`: disappearance of the marker on the registered source contradicts the assumption.
-- `test_exact_text_challenge_unavailable_selected_source_fails_closed`: unavailable selected URL produces `UNAVAILABLE` / `EXTERNAL_FAILURE`.
+- `test_exact_text_challenge_unavailable_source_is_external_failure_not_contradiction`: unavailable URL produces `UNAVAILABLE` / `EXTERNAL_FAILURE`, insufficient evidence, and no invalidation.
+- `test_exact_text_challenge_availability_is_scoped_to_selected_source`: source A remains available while challenged source B is unavailable; B remains `UNAVAILABLE` / `EXTERNAL_FAILURE`.
 - `test_exact_text_challenge_preserves_registered_retrieval_kind`: challenge uses the selected frozen source's retrieval kind.
 - `test_exact_text_multiple_sources_reject_ambiguous_frozen_markers`: inconsistent registered criteria are rejected.
 - `test_successor_linkage_is_authorized_at_registration_boundary`: creator succeeds, unrelated direct and helper attempts fail without occupying the slot, and only one successor is allowed.

@@ -350,33 +350,60 @@ def test_exact_text_challenge_can_recheck_frozen_registered_source():
         context.__exit__(None, None, None)
 
 
-def test_exact_text_challenge_unavailable_selected_source_fails_closed():
+def test_exact_text_challenge_unavailable_source_is_external_failure_not_contradiction():
     vm, context, contract = deploy(mock_sources=False)
     try:
         selected = "https://example.com/exact-selected"
-        other = "https://example.com/exact-other"
         source_assumptions = json.dumps([{
             "assumption_id": "exact", "statement": "A frozen marker remains published.", "criticality": "CRITICAL",
-            "evaluation_mode": "EXACT_TEXT", "sources": [
-                {"url": selected, "retrieval_kind": "WEB_RENDER_HTML", "match_text": "licensed"},
-                {"url": other, "retrieval_kind": "WEB_RENDER_HTML", "match_text": "licensed"},
-            ],
+            "evaluation_mode": "EXACT_TEXT", "sources": [{"url": selected, "retrieval_kind": "WEB_RENDER_HTML", "match_text": "licensed"}],
         }])
         vm.mock_web(selected, {"status": 200, "body": "licensed"})
-        vm.mock_web(other, {"status": 200, "body": "licensed"})
         contract.register_decision("E1", "subject:exact", "payload", "policy", source_assumptions, "[]", 3600, 600)
         contract.establish_baseline("E1")
         vm.clear_mocks()
-        # The other registered source supported the baseline, but challenge
-        # evaluation is scoped to the selected source, which now has no response.
         challenge = contract.challenge_revalidation("E1", "exact", "NEW_EVIDENCE", selected, "Source is temporarily unavailable.")
         assert challenge["finding"]["support_state"] == "UNAVAILABLE"
         assert challenge["finding"]["materiality"] == "EXTERNAL_FAILURE"
+        assert challenge["finding"]["evidence_sufficient"] is False
         assert challenge["finding"]["external_failure"] is True
         assert challenge["finding"]["critical_conflict"] is False
         assert contract.get_reliance_status("E1") != "INVALIDATED"
     finally:
         context.__exit__(None, None, None)
+
+
+def test_exact_text_challenge_availability_is_scoped_to_selected_source():
+    vm, context, contract = deploy(mock_sources=False)
+    try:
+        source_a = "https://example.com/exact-source-a"
+        source_b = "https://example.com/exact-source-b"
+        source_assumptions = json.dumps([{
+            "assumption_id": "exact", "statement": "A frozen marker remains published.", "criticality": "CRITICAL",
+            "evaluation_mode": "EXACT_TEXT", "sources": [
+                {"url": source_a, "retrieval_kind": "WEB_RENDER_HTML", "match_text": "licensed"},
+                {"url": source_b, "retrieval_kind": "WEB_RENDER_HTML", "match_text": "licensed"},
+            ],
+        }])
+        vm.mock_web(source_a, {"status": 200, "body": "licensed"})
+        vm.mock_web(source_b, {"status": 200, "body": "licensed"})
+        contract.register_decision("E1", "subject:exact", "payload", "policy", source_assumptions, "[]", 3600, 600)
+        contract.establish_baseline("E1")
+        vm.clear_mocks()
+        # Source A remains available while challenged source B returns empty
+        # content. The unused A mock confirms challenge evaluation doesn't fetch it.
+        vm.mock_web(source_a, {"status": 200, "body": "licensed"})
+        vm.mock_web(source_b, {"status": 200, "body": ""})
+        challenge = contract.challenge_revalidation("E1", "exact", "NEW_EVIDENCE", source_b, "Recheck source B.")
+        assert challenge["finding"]["support_state"] == "UNAVAILABLE"
+        assert challenge["finding"]["materiality"] == "EXTERNAL_FAILURE"
+        assert challenge["finding"]["evidence_sufficient"] is False
+        assert challenge["finding"]["external_failure"] is True
+        assert challenge["finding"]["support_state"] != "CONTRADICTED"
+        assert contract.get_reliance_status("E1") != "INVALIDATED"
+    finally:
+        with pytest.warns(RuntimeWarning, match="https://example.com/exact-source-a"):
+            context.__exit__(None, None, None)
 
 
 def test_exact_text_challenge_preserves_registered_retrieval_kind():

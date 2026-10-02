@@ -5,11 +5,11 @@
 - Previous deployed-source commit: `176136ee1bb507aee8aa86673741ee9d8792500d`.
 - Security-fix source commit: `2ae77cfca02bb81f770aa4e1838a846260decafa`.
 - Previous security-fix source commit `2ae77cfca02bb81f770aa4e1838a846260decafa`: 17 Direct Mode tests passed (includes adversarial security regressions).
-- Current source: 20 Direct Mode tests passed; GenVM lint passed 3 checks; schema unchanged at 22 methods (14 read, 8 write).
+- Current source: 21 Direct Mode tests passed; GenVM lint passed 3 checks; schema unchanged at 22 methods (14 read, 8 write).
 - Pickling/serialization: enabled in Direct Mode tests.
 - GenVM linter 0.11.0: 3 checks passed.
 - GenVM schema: 22 methods (14 read, 8 write).
-- Clean clone: temporary candidate commit `f8919a885dcd24bcabda5e03d51c8b9c77175062`, created from current tracked working-tree contents because the workspace `.git` is read-only; clone passed requirements resolution, 20 Direct Mode tests, lint (3 checks), and schema (22 methods).
+- Clean clone: temporary candidate commit `f8919a885dcd24bcabda5e03d51c8b9c77175062` passed requirements resolution, 20 Direct Mode tests, lint (3 checks), and schema (22 methods). Clean-clone recheck of the latest adversarial test addition is pending.
 
 ## Current deployment (latest challenge-fix source)
 
